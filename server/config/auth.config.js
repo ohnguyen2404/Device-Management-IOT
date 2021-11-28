@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 module.exports = {
-  secret: "nguyenon-key"
+  secret: process.env.AUTH_SECRET_KEY
 }

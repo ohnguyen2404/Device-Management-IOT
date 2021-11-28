@@ -2,7 +2,6 @@ const {User, Role} = require('../models')
 const {Op} = require("sequelize")
 
 checkDuplicateUsernameOrEmail = async (req, res, next) => {
-  console.log('checkDupli body', req.body);
   const user = await User.findOne({
     where: {
       [Op.or]: [
@@ -22,7 +21,6 @@ checkDuplicateUsernameOrEmail = async (req, res, next) => {
 
 checkRoleExisted = (req, res, next) => {
   const {role} = req.body
-  console.log('checkRole', Role.defaultRoles);
   if (role) {
     if (!Role.defaultRoles.includes(role)) {
       res.status(400).send({

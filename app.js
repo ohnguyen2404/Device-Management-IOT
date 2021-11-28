@@ -3,6 +3,9 @@ const logger = require('morgan');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
+// Set up .env file
+require('dotenv').config();
+
 // Set up the express app
 const app = express();
 
