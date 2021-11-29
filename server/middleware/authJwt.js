@@ -1,5 +1,4 @@
-const jwt = require("jsonwebtoken");
-const config = require("../config/auth.config");
+const jwtService = require('../services/jwt')
 const db = require('../models');
 const User = db.User
 
@@ -12,14 +11,19 @@ verifyToken = (req, res, next) => {
     })
   }
 
-  jwt.verify(token, config.secret, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({message: "Unauthorized!"});
-    }
+  const verifyOptions = {
+    issuer: 'DeviceManagementIOT',
+    subject: 'user_signin',
+    audience: 'http://localhost:8000'
+  }
 
-    req.userId = decoded.id
-    next()
-  })
+  const legit = jwtService.verify(token, verifyOptions)
+  if (!legit) {
+    return res.status(401).send({message: "Unauthorized!"});
+  }
+  
+  req.userId = jwtService.decode(token).payload.id
+  next()
 
 }
 
@@ -28,8 +32,8 @@ isAdmin = async (req, res, next) => {
   const userRole = user.role
 
   if (userRole === "ADMIN") {
-    next();
-    return;
+    next()
+    return
   }
   
   res.status(403).send({message: "Require Admin role!"})

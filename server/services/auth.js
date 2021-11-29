@@ -1,5 +1,4 @@
-const config = require("../config/auth.config")
-const jwt = require("jsonwebtoken")
+const jwtService = require("../services/jwt")
 const bcrypt = require("bcryptjs")
 
 const User = require('../models').User
@@ -7,14 +6,20 @@ const User = require('../models').User
 const AuthService = {
   async signUp (body) {
     const {username, email, password, role} = body
-    const user = await User.create({
-      username,
-      email,
-      password: bcrypt.hashSync(password, 8),
-      role
-    })
+    try {
+      await User.create({
+        username,
+        email,
+        password: bcrypt.hashSync(password, 8),
+        role
+      })
+    }
+    catch (err) {
+      console.log(err)
+      return false
+    }
 
-    role ? user.update(role) : user.update({role: "USER"})
+    return true
   },
 
   async signIn (body) {
@@ -39,7 +44,7 @@ const AuthService = {
       password,
       user.password
     )
-
+ 
     if (!passwordIsValid) {
       result = {
         status:401,
@@ -50,9 +55,14 @@ const AuthService = {
       return result
     }
 
-    const token = jwt.sign({id: user.id}, config.secret, {
-      expiresIn: 86400 // 24 hrs
-    })
+    const signOptions = {
+      issuer: 'DeviceManagementIOT',
+      subject: 'user_signin',
+      audience: 'http://localhost:8000'
+    }
+
+    const token = jwtService.sign({id: user.id}, signOptions)
+    console.log('token', token);
 
     const userRole = user.role
     result = {
@@ -61,7 +71,7 @@ const AuthService = {
       username: user.username,
       email: user.email,
       role: userRole,
-      accesssToken: token
+      accesssToken:token
     }
 
     return result
