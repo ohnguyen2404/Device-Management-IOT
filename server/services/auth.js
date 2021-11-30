@@ -62,7 +62,6 @@ const AuthService = {
     }
 
     const token = jwtService.sign({id: user.id}, signOptions)
-    console.log('token', token);
 
     const userRole = user.role
     result = {

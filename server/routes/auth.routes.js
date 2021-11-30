@@ -1,4 +1,4 @@
-const {verifySignUp} = require('../middleware')
+const {verifySignUp, validator} = require('../middleware')
 const authController = require('../controllers/auth')
 
 module.exports = (app) => {
@@ -14,7 +14,10 @@ module.exports = (app) => {
     "/api/auth/signup",
     [
       verifySignUp.checkDuplicateUsernameOrEmail,
-      verifySignUp.checkRoleExisted
+      verifySignUp.checkRoleExisted,
+      validator.validateField('username'),
+      validator.validateField('email'),
+      validator.validateField('password')
     ],
     authController.signup
   )

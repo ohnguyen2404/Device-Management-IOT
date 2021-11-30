@@ -3,7 +3,6 @@ const AuthService = require("../services/auth")
 module.exports = {
   // signup
   async signup (req, res) {
-
     const result = await AuthService.signUp(req.body)
     
     if (!result) {
