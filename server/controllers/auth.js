@@ -18,7 +18,8 @@ module.exports = {
 
   // signin
   async signin (req, res) {
-    const result = await AuthService.signIn(req.body)
+    const {username, password} = req.body
+    const result = await AuthService.signIn(username, password)
 
     res.status(result.status).send(result)
   }
