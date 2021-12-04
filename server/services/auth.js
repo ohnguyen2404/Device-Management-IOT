@@ -4,8 +4,7 @@ const bcrypt = require("bcryptjs")
 const User = require('../models').User
 
 const AuthService = {
-  async signUp (body) {
-    const {username, email, password, role} = body
+  async signUp (username, email, password, role) {
     try {
       await User.create({
         username,
@@ -22,9 +21,7 @@ const AuthService = {
     return true
   },
 
-  async signIn (body) {
-    const {username, password} = body
-    let result
+  async signIn (username, password) {
     const user = await User.findOne({
       where: {
         username
@@ -32,12 +29,10 @@ const AuthService = {
     })
 
     if (!user) {
-      result = {
+      return {
         status: 404,
         message: "User not found"
       }
-
-      return result
     }
 
     const passwordIsValid = bcrypt.compareSync(
@@ -46,34 +41,30 @@ const AuthService = {
     )
  
     if (!passwordIsValid) {
-      result = {
+      return {
         status:401,
         message: "Invalid password",
-        accesssToken: null
+        accessToken: null
       }
-
-      return result
     }
 
     const signOptions = {
-      issuer: 'DeviceManagementIOT',
-      subject: 'user_signin',
-      audience: 'http://localhost:8000'
+      issuer: process.env.JWT_ISSUER,
+      subject: process.env.JWT_SUBJECT_SIGN_IN,
+      audience: process.env.JWT_AUDIENCE
     }
 
     const token = jwtService.sign({id: user.id}, signOptions)
-
     const userRole = user.role
-    result = {
+
+    return {
       status: 200,
       id: user.id,
       username: user.username,
       email: user.email,
       role: userRole,
-      accesssToken:token
+      accessToken: token
     }
-
-    return result
   }
 
 }

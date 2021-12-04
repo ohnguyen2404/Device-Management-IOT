@@ -11,8 +11,8 @@ module.exports = {
       issuer: $Options.issuer,
       subject: $Options.subject,
       audience: $Options.audience,
-      expiresIn: '30d', // 30 days validity
-      algorithm: 'RS256'
+      expiresIn: process.env.JWT_EXPIRES_IN,
+      algorithm: process.env.JWT_ALGORITHM
     }
 
     return jwt.sign(payload, privateKEY, signOptions)
@@ -23,8 +23,8 @@ module.exports = {
       issuer: $Options.issuer,
       subject: $Options.subject,
       audience: $Options.audience,
-      expiresIn: '30d',
-      algorithm: ["RS256"]
+      expiresIn: process.env.JWT_EXPIRES_IN,
+      algorithm: [process.env.JWT_ALGORITHM]
     }
 
     try {

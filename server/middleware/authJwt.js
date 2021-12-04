@@ -12,9 +12,9 @@ verifyToken = (req, res, next) => {
   }
 
   const verifyOptions = {
-    issuer: 'DeviceManagementIOT',
-    subject: 'user_signin',
-    audience: 'http://localhost:8000'
+    issuer: process.env.JWT_ISSUER,
+    subject: process.env.SUBJECT_SIGN_IN,
+    audience: process.env.JWT_AUDIENCE
   }
 
   const legit = jwtService.verify(token, verifyOptions)

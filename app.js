@@ -14,7 +14,7 @@ app.use(logger('dev'));
 
 // CORS configuration
 const corsOptions = {
-  origin: "http://localhost:8000"
+  origin: "http://localhost:3000"
 }
 
 app.use(cors(corsOptions))
@@ -25,8 +25,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Require routes to the app
 require('./server/routes')(app);
-//require('./server/routes/auth.routes')(app);
-//require('./server/routes/user.routes')(app);
 
 // Setup a default catch-all route that sends back a welcome message in JSON format.
 app.get('*', (req, res) => res.status(200).send({
