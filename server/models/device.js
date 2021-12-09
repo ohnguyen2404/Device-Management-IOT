@@ -1,7 +1,7 @@
 const {v4: uuidv4} = require('uuid')
 
 module.exports = (sequelize, Sequelize) => {
-  const User = sequelize.define('user', {
+  const Device = sequelize.define('device', {
     id: {
       type: Sequelize.UUID,
       primaryKey: true
@@ -20,23 +20,23 @@ module.exports = (sequelize, Sequelize) => {
         key: 'id'
       }
     },
-    email: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      unique: true
+    device_data: {
+      type: Sequelize.JSON
     },
-    password: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    first_name: {
+    type: {
       type: Sequelize.STRING
     },
-    last_name: {
+    name: {
+      type: Sequelize.JSON
+    },
+    label: {
       type: Sequelize.STRING
     },
-    authority: {
-      type: Sequelize.STRING(10)
+    firmware_id: {
+      type: Sequelize.UUID
+    },
+    software_id: {
+      type: Sequelize.UUID
     },
     deleted: {
       type: Sequelize.BOOLEAN,
@@ -48,13 +48,11 @@ module.exports = (sequelize, Sequelize) => {
     update_uid: {
       type: Sequelize.UUID
     }
-
   }, {
     underscored: true,
     freezeTableName: true
   });
 
-  User.beforeCreate(user => user.id = uuidv4())
-
-  return User;
+  Device.beforeCreate(device => device.id = uuidv4())
+  return Device;
 };

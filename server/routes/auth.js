@@ -13,9 +13,8 @@ module.exports = (app) => {
   app.post(
     "/auth/register",
     [
-      verifySignUp.checkDuplicateUsernameOrEmail,
+      verifySignUp.checkDuplicateEmail,
       verifySignUp.checkRolesExisted,
-      validator.validateField('username'),
       validator.validateField('email'),
       validator.validateField('password'),
     ],

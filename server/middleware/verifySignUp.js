@@ -1,21 +1,17 @@
 const {User, Role} = require('../models')
 const {Op} = require("sequelize")
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
-const { async } = require('validate.js')
 
-checkDuplicateUsernameOrEmail = async (req, res, next) => {
+checkDuplicateEmail = async (req, res, next) => {
   const user = await User.findOne({
     where: {
-      [Op.or]: [
-        {username: req.body.username},
-        {email: req.body.email}
-      ]
+      email: req.body.email
     }
   })
 
   if (user) {
     res.status(400).send({
-      message: "Register fail! Username or Email is already in use.",
+      message: "Register fail! Email is already in use.",
       HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
       statusValue: StatusCodes.BAD_REQUEST,
       timestamp: new Date().toISOString()
@@ -47,7 +43,7 @@ checkRolesExisted = async (req, res, next) => {
 }
 
 const verifySignUp = {
-  checkDuplicateUsernameOrEmail: checkDuplicateUsernameOrEmail,
+  checkDuplicateEmail: checkDuplicateEmail,
   checkRolesExisted: checkRolesExisted
 }
 

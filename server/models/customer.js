@@ -1,7 +1,7 @@
 const {v4: uuidv4} = require('uuid')
 
 module.exports = (sequelize, Sequelize) => {
-  const User = sequelize.define('user', {
+  const Customer = sequelize.define('customer', {
     id: {
       type: Sequelize.UUID,
       primaryKey: true
@@ -13,30 +13,33 @@ module.exports = (sequelize, Sequelize) => {
         key: 'id'
       }
     },
-    customer_id: {
-      type: Sequelize.UUID,
-      references: {
-        model: 'customer',
-        key: 'id'
-      }
-    },
+    //user_id: {
+    //  type: Sequelize.UUID,
+    //  references: {
+    //    model: 'user',
+    //    key: 'id'
+    //  }
+    //},
     email: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      unique: true
-    },
-    password: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    first_name: {
       type: Sequelize.STRING
     },
-    last_name: {
+    title: {
       type: Sequelize.STRING
     },
-    authority: {
-      type: Sequelize.STRING(10)
+    address: {
+      type: Sequelize.STRING
+    },
+    phone: {
+      type: Sequelize.STRING
+    },
+    country: {
+      type: Sequelize.STRING
+    },
+    city: {
+      type: Sequelize.STRING
+    },
+    state: {
+      type: Sequelize.STRING
     },
     deleted: {
       type: Sequelize.BOOLEAN,
@@ -48,13 +51,12 @@ module.exports = (sequelize, Sequelize) => {
     update_uid: {
       type: Sequelize.UUID
     }
-
   }, {
     underscored: true,
     freezeTableName: true
   });
 
-  User.beforeCreate(user => user.id = uuidv4())
+  Customer.beforeCreate = (customer => customer.id = uuidv4())
 
-  return User;
+  return Customer;
 };

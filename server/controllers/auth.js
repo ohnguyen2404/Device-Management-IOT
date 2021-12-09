@@ -4,9 +4,9 @@ const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 module.exports = {
   // register
   async register (req, res) {
-    const {username, email, password} = req.body
+    const {email, password} = req.body
     const roles = req.body.roles || ['USER']
-    const result = await AuthService.register(username, email, password, roles)
+    const result = await AuthService.register(email, password, roles)
     
     if (!result) {
       res.status(500).send({
@@ -24,8 +24,8 @@ module.exports = {
 
   // login
   async login (req, res) {
-    const {username, password} = req.body
-    const result = await AuthService.login(username, password)
+    const {email, password} = req.body
+    const result = await AuthService.login(email, password)
 
     res.status(result.status).send(result)
   }

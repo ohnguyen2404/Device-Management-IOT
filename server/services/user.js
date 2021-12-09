@@ -3,8 +3,8 @@ const User = require("../models").User
 const UserService = {
 	
 	async createUser(user) {
-    const { username, email, password } = user
-		await User.create({username, email, password})
+    const {email, password} = user
+		await User.create({email, password})
 	},
 
 	async updateUser(userId, info) {

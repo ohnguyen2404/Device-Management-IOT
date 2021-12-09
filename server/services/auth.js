@@ -5,26 +5,24 @@ const bcrypt = require("bcryptjs")
 const{User, Role, User_Role, } = require('../models')
 
 const AuthService = {
-  async register (username, email, password, roles) {
+  async register (email, password, roles) {
     try {
-      //const validRoles = await Role.findAll({
-      //  where: {name: roles},
-      //  raw: true
-      //})
+      const validRoles = await Role.findAll({
+        where: {name: roles},
+        raw: true
+      })
 
-      //const newUser = await User.create({
-      //  username,
-      //  email,
-      //  password: bcrypt.hashSync(password, 8),
-      //})
+      const newUser = await User.create({
+        email,
+        password: bcrypt.hashSync(password, 8),
+      })
 
-      //validRoles.forEach(async (role) => {
-      //  await User_Role.create({
-      //    userId: newUser.id,
-      //    roleId: role.id
-      //  })
-      //})
-      console.log('REGISTEREDDDDD');
+      validRoles.forEach(async (role) => {
+        await User_Role.create({
+          user_id: newUser.id,
+          role_id: role.id
+        })
+      })
     }
     catch (err) {
       console.log(err)
@@ -34,10 +32,10 @@ const AuthService = {
     return true
   },
 
-  async login (username, password) {
+  async login (email, password) {
     const user = await User.findOne({
       where: {
-        username
+        email
       },
       include: {
         model: Role
@@ -80,7 +78,6 @@ const AuthService = {
     return {
       status: 200,
       id: user.id,
-      username: user.username,
       email: user.email,
       roles: userRoles,
       accessToken: token

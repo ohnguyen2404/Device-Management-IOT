@@ -7,7 +7,10 @@ module.exports = (sequelize, Sequelize) => {
       autoIncrement: true,
       primaryKey: true
     },
-  }, {freezeTableName: true});
+  }, {
+    underscored: true,
+    freezeTableName: true
+  });
 
   return User_Role;
 };

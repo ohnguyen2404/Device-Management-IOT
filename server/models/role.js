@@ -5,6 +5,9 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
       unique: true
     }
+  }, {
+    underscored: true,
+    freezeTableName: true
   });
 
   Role.defaultRoles = ['USER', 'ADMIN']
@@ -17,5 +20,6 @@ module.exports = (sequelize, Sequelize) => {
       })
     })
   }
+  
   return Role;
 };
