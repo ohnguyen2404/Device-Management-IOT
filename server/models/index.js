@@ -22,15 +22,15 @@ db.Sequelize = Sequelize;
 
 db.User = require('../models/user')(sequelize, Sequelize);
 db.Role = require('../models/role')(sequelize, Sequelize);
-
-db.Role.belongsToMany(db.User, {
-  through: 'User_Role'
-});
+db.User_Role = require('../models/user_role')(sequelize, Sequelize);
 
 db.User.belongsToMany(db.Role, {
-  through: 'User_Role'
+  through: 'user_role'
 })
 
-db.Role.initial()
+db.Role.belongsToMany(db.User, {
+  through: 'user_role'
+});
+
 
 module.exports = db;

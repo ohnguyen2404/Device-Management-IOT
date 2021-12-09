@@ -1,22 +1,30 @@
 const jwtService = require("../services/jwt")
 const bcrypt = require("bcryptjs")
+//const sequelize = require('sequelize')
 
-const{User, Role} = require('../models')
+const{User, Role, User_Role, } = require('../models')
 
 const AuthService = {
-  async signUp (username, email, password, roles) {
+  async register (username, email, password, roles) {
     try {
-      await User.create({
-        username,
-        email,
-        password: bcrypt.hashSync(password, 8),
-      })
+      //const validRoles = await Role.findAll({
+      //  where: {name: roles},
+      //  raw: true
+      //})
 
-      const validRoles = Role.findAll({
-        where: {name: [roles]}
-      })
+      //const newUser = await User.create({
+      //  username,
+      //  email,
+      //  password: bcrypt.hashSync(password, 8),
+      //})
 
-      User.setRoles(validRoles)
+      //validRoles.forEach(async (role) => {
+      //  await User_Role.create({
+      //    userId: newUser.id,
+      //    roleId: role.id
+      //  })
+      //})
+      console.log('REGISTEREDDDDD');
     }
     catch (err) {
       console.log(err)
@@ -26,11 +34,19 @@ const AuthService = {
     return true
   },
 
-  async signIn (username, password) {
+  async login (username, password) {
     const user = await User.findOne({
       where: {
         username
-      }
+      },
+      include: {
+        model: Role
+      },
+    })
+
+    const userRoles = []
+    user.roles.forEach(role => {
+      userRoles.push(role.name)
     })
 
     if (!user) {
@@ -60,14 +76,13 @@ const AuthService = {
     }
 
     const token = jwtService.sign({id: user.id}, signOptions)
-    const userRole = user.role
 
     return {
       status: 200,
       id: user.id,
       username: user.username,
       email: user.email,
-      role: userRole,
+      roles: userRoles,
       accessToken: token
     }
   }

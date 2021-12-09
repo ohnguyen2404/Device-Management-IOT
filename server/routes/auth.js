@@ -13,18 +13,18 @@ module.exports = (app) => {
   app.post(
     "/auth/register",
     [
+      verifySignUp.checkDuplicateUsernameOrEmail,
+      verifySignUp.checkRolesExisted,
       validator.validateField('username'),
       validator.validateField('email'),
       validator.validateField('password'),
-      verifySignUp.checkDuplicateUsernameOrEmail,
-      verifySignUp.checkRolesExisted
     ],
-    authController.signup
+    authController.register
   )
 
   app.post(
     "/auth/login",
-    authController.signin
+    authController.login
   )
 
   

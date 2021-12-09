@@ -1,20 +1,19 @@
 const AuthService = require("../services/auth")
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
-const { now } = require("sequelize/dist/lib/utils")
 
 module.exports = {
-  // signup
-  async signup (req, res) {
+  // register
+  async register (req, res) {
     const {username, email, password} = req.body
     const roles = req.body.roles || ['USER']
-    const result = await AuthService.signUp(username, email, password, roles)
+    const result = await AuthService.register(username, email, password, roles)
     
     if (!result) {
       res.status(500).send({
         message: "User register failed!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
-        timestamp: new Date.toISOString()
+        timestamp: new Date().toISOString()
       })
       return
     }
@@ -23,10 +22,10 @@ module.exports = {
 
   },
 
-  // signin
-  async signin (req, res) {
+  // login
+  async login (req, res) {
     const {username, password} = req.body
-    const result = await AuthService.signIn(username, password)
+    const result = await AuthService.login(username, password)
 
     res.status(result.status).send(result)
   }

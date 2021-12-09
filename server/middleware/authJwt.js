@@ -1,5 +1,6 @@
 const jwtService = require('../services/jwt')
 const db = require('../models');
+const { Role } = require('../models');
 const User = db.User
 
 verifyToken = (req, res, next) => {
@@ -28,16 +29,22 @@ verifyToken = (req, res, next) => {
 }
 
 isAdmin = async (req, res, next) => {
-  const user = await User.findByPk(req.userId)
-  const userRole = user.role
+  const user = await User.findByPk(req.userId, {
+    include: {
+      model: Role
+    }
+  })
 
-  if (userRole === "ADMIN") {
-    next()
-    return
-  }
-  
-  res.status(403).send({message: "Require Admin role!"})
-  return
+  let isAdmin = false
+  user.roles.forEach((role) => {
+    if (role.name === "ADMIN") {
+      isAdmin = true
+    }
+  })
+
+  isAdmin
+  ? next()
+  : res.status(403).send({message: "Require Admin role!"}) 
 }
 
 const authJwt = {
