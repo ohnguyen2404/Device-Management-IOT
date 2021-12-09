@@ -19,6 +19,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
+const db = require("./server/models")
+
+db.sequelize.sync({logging: false})
+
 // Parse incoming requests data (https://github.com/expressjs/body-parser)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

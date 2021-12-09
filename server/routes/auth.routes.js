@@ -11,19 +11,19 @@ module.exports = (app) => {
   })
 
   app.post(
-    "/api/auth/signup",
+    "/auth/register",
     [
-      verifySignUp.checkDuplicateUsernameOrEmail,
-      verifySignUp.checkRoleExisted,
       validator.validateField('username'),
       validator.validateField('email'),
-      validator.validateField('password')
+      validator.validateField('password'),
+      verifySignUp.checkDuplicateUsernameOrEmail,
+      verifySignUp.checkRolesExisted
     ],
     authController.signup
   )
 
   app.post(
-    "/api/auth/signin",
+    "/auth/login",
     authController.signin
   )
 

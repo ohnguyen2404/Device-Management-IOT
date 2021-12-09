@@ -13,7 +13,7 @@ verifyToken = (req, res, next) => {
 
   const verifyOptions = {
     issuer: process.env.JWT_ISSUER,
-    subject: process.env.SUBJECT_SIGN_IN,
+    subject: process.env.JWT_SUBJECT_SIGN_IN,
     audience: process.env.JWT_AUDIENCE
   }
 

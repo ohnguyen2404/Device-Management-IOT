@@ -1,19 +1,21 @@
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, Sequelize) => {
   const Role = sequelize.define('Role', {
     name: {
-      type: DataTypes.STRING,
+      type: Sequelize.STRING,
       allowNull: false,
+      unique: true
     }
   });
 
-  Role.associate = (models) => {
-    Role.belongsToMany(models.User, {
-      through: 'user_role',
-      foreignKey: 'roleId',
-    });
-  };
-
   Role.defaultRoles = ['USER', 'ADMIN']
 
+  Role.initial = () => {
+    Role.defaultRoles.forEach((role) => {
+      Role.findOrCreate({
+        where: {name: role},
+        logging: false
+      })
+    })
+  }
   return Role;
 };

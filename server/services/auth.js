@@ -1,17 +1,22 @@
 const jwtService = require("../services/jwt")
 const bcrypt = require("bcryptjs")
 
-const User = require('../models').User
+const{User, Role} = require('../models')
 
 const AuthService = {
-  async signUp (username, email, password, role) {
+  async signUp (username, email, password, roles) {
     try {
       await User.create({
         username,
         email,
         password: bcrypt.hashSync(password, 8),
-        role
       })
+
+      const validRoles = Role.findAll({
+        where: {name: [roles]}
+      })
+
+      User.setRoles(validRoles)
     }
     catch (err) {
       console.log(err)

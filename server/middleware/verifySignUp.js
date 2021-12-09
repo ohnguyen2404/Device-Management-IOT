@@ -12,22 +12,25 @@ checkDuplicateUsernameOrEmail = async (req, res, next) => {
   })
 
   if (user) {
-    res.status(400).send("Register fail! Username or Email is already in use.")
+    res.status(400).send({message: "Register fail! Username or Email is already in use."})
     return
   }
 
   next()
 }
 
-checkRoleExisted = (req, res, next) => {
-  const {role} = req.body
-  if (role) {
-    if (!Role.defaultRoles.includes(role)) {
-      res.status(400).send({
-        message: "Register failed! Role does not exist: " + role
-      })
-      return
-    }
+checkRolesExisted = (req, res, next) => {
+  const {roles} = req.body
+  if (roles) {
+    roles.forEach((role) => {
+      
+      if (!Role.defaultRoles.includes(role)) {
+        res.status(400).send({
+          message: "Register failed! Role does not exist: " + role
+        })
+        return
+      }
+    })
   }
   
   next()
@@ -35,7 +38,7 @@ checkRoleExisted = (req, res, next) => {
 
 const verifySignUp = {
   checkDuplicateUsernameOrEmail: checkDuplicateUsernameOrEmail,
-  checkRoleExisted: checkRoleExisted
+  checkRolesExisted: checkRolesExisted
 }
 
 module.exports = verifySignUp;
