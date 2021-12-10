@@ -13,13 +13,10 @@ module.exports = (sequelize, Sequelize) => {
         key: 'id'
       }
     },
-    //user_id: {
-    //  type: Sequelize.UUID,
-    //  references: {
-    //    model: 'user',
-    //    key: 'id'
-    //  }
-    //},
+    user_id: {
+      type: Sequelize.UUID,
+      allowNull: true
+    },
     email: {
       type: Sequelize.STRING
     },

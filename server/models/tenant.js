@@ -6,13 +6,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.UUID,
       primaryKey: true
     },
-    //user_id: {
-    //  type: Sequelize.UUID,
-    //  references: {
-    //    model: 'user',
-    //    key: 'id'
-    //  }
-    //},
+    user_id: {
+      type: Sequelize.UUID,
+      allowNull: true
+    },
     email: {
       type: Sequelize.STRING
     },

@@ -41,11 +41,11 @@ db.Role.belongsToMany(db.User, {
 });
 
 db.Tenant.hasMany(db.Device, {foreignKey: 'tenant_id'})
-db.Tenant.hasMany(db.Customer, {foreignKey: 'tenant_id'})
 db.Tenant.hasMany(db.User, {foreignKey: 'tenant_id'})
+db.Tenant.hasMany(db.Customer, {foreignKey: 'tenant_id'})
 
-db.Customer.hasMany(db.User, {foreignKey: 'customer_id'})
 db.Customer.hasMany(db.Device, {foreignKey: 'customer_id'})
+db.Customer.hasMany(db.User, {foreignKey: 'customer_id'})
 db.Customer.belongsTo(db.Tenant, {foreignKey: 'tenant_id'})
 
 db.Device.belongsTo(db.Tenant, {foreignKey: 'tenant_id'})
@@ -53,11 +53,5 @@ db.Device.belongsTo(db.Customer, {foreignKey: 'customer_id'})
 
 db.User.belongsTo(db.Tenant, {foreignKey: 'tenant_id'})
 db.User.belongsTo(db.Customer, {foreignKey: 'customer_id'})
-
-//
-//db.User.hasOne(db.Tenant, {foreignKey: 'user_id'})  
-//db.User.hasOne(db.Customer, {foreignKey: 'user_id'}) 
-//db.Customer.belongsTo(db.User, {foreignKey: 'user_id'})
-//db.Tenant.belongsTo(db.User, {foreignKey: 'user_id'})
 
 module.exports = db;
