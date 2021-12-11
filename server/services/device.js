@@ -8,9 +8,19 @@ const DeviceService = {
         : {tenant_id}
     }
     console.log('deviceQuery', deviceQuery);
-    const devices = await Device.findAll({deviceQuery})
+    const devices = await Device.findAll(deviceQuery)
 
     return devices
+  },
+
+  async get(deviceId) {
+    try {
+      return await Device.findByPk(deviceId)
+    }
+    catch (e) {
+      console.log('error', e.message);
+      return false
+    }
   },
 
   async create(tenant_id, options) {

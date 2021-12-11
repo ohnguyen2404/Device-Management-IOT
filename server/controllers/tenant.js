@@ -1,15 +1,13 @@
-const DeviceService = require('../services/device')
+const TenantService = require('../services/tenant')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
-  async getAllDevices(req, res) {
-    const {tenant_id, customer_id} = req.body
-
-    const result = await DeviceService.getAll(tenant_id, customer_id)
+  async getAllTenants(req, res) {
+    const result = await TenantService.getAll()
 
     if (!result) {
       res.status(500).send({
-        message: "Can not get devices!",
+        message: "Can not get tenants!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
@@ -20,13 +18,13 @@ module.exports = {
     res.status(200).send(result)
   },
 
-  async getDevice(req, res) {
-    const deviceId = req.params.deviceId
-    const result = await DeviceService.get(deviceId)
+  async getTenant(req, res) {
+    const tenantId = req.params.tenantId
+    const result = await TenantService.get(tenantId)
 
     if (!result) {
       res.status(500).send({
-        message: `Can not get device with UUID: ${deviceId}!`,
+        message: `Can not get tenant with UUID: ${tenantId}!`,
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
@@ -37,13 +35,13 @@ module.exports = {
     res.status(200).send(result)
   },
 
-  async createDevice(req, res) {
-    const {tenant_id, ...options} = req.body
-    const result = await DeviceService.create(tenant_id, options)
+  async createTenant(req, res) {
+    const {user_id, ...options} = req.body
+    const result = await TenantService.create(user_id, options)
 
     if (!result) {
       res.status(500).send({
-        message: "Can not create device!",
+        message: "Can not create tenant!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
@@ -52,17 +50,17 @@ module.exports = {
     }
 
     res.status(200).send({
-      message: "Create device successful!"
+      message: "Create tenant successful!"
     })
   },
 
-  async updateDevice(req, res) {
-    const deviceId = req.params.deviceId
+  async updateTenant(req, res) {
+    const tenantId = req.params.tenantId
     const options = req.body
-    const result = await DeviceService.update(deviceId, options)
+    const result = await TenantService.update(tenantId, options)
     if (!result) {
       res.status(500).send({
-        message: "Can not update device!",
+        message: "Can not update tenant!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
@@ -70,17 +68,17 @@ module.exports = {
       return
     }
     res.status(200).send({
-      message: "Update device successful!"
+      message: "Update tenant successful!"
     })
   },
 
-  async removeDevice(req, res) {
-    const deviceId = req.params.deviceId
+  async removeTenant(req, res) {
+    const tenantId = req.params.tenantId
 
-    const result = await DeviceService.delete(deviceId)
+    const result = await TenantService.delete(tenantId)
     if (!result) {
       res.status(500).send({
-        message: "Can not delete device!",
+        message: "Can not delete tenant!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
@@ -89,7 +87,7 @@ module.exports = {
     } 
     
     res.status(200).send({
-      message: "Delete device successful!"
+      message: "Delete tenant successful!"
     })
   }
 }

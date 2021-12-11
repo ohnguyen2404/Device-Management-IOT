@@ -53,7 +53,7 @@ module.exports = (sequelize, Sequelize) => {
     freezeTableName: true
   });
 
-  Customer.beforeCreate = (customer => customer.id = uuidv4())
+  Customer.beforeCreate(customer => customer.id = uuidv4())
 
   return Customer;
 };

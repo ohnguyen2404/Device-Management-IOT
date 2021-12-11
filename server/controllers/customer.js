@@ -1,15 +1,15 @@
-const DeviceService = require('../services/device')
+const CustomerService = require('../services/customer')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
-  async getAllDevices(req, res) {
-    const {tenant_id, customer_id} = req.body
+  async getAllCustomers(req, res) {
+    const {tenant_id} = req.body
 
-    const result = await DeviceService.getAll(tenant_id, customer_id)
+    const result = await CustomerService.getAll(tenant_id)
 
     if (!result) {
       res.status(500).send({
-        message: "Can not get devices!",
+        message: "Can not get customers!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
@@ -20,13 +20,13 @@ module.exports = {
     res.status(200).send(result)
   },
 
-  async getDevice(req, res) {
-    const deviceId = req.params.deviceId
-    const result = await DeviceService.get(deviceId)
+  async getCustomer(req, res) {
+    const customerId = req.params.customerId
+    const result = await CustomerService.get(customerId)
 
     if (!result) {
       res.status(500).send({
-        message: `Can not get device with UUID: ${deviceId}!`,
+        message: `Can not get customer with UUID: ${customerId}!`,
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
@@ -37,13 +37,13 @@ module.exports = {
     res.status(200).send(result)
   },
 
-  async createDevice(req, res) {
-    const {tenant_id, ...options} = req.body
-    const result = await DeviceService.create(tenant_id, options)
+  async createCustomer(req, res) {
+    const {user_id, ...options} = req.body
+    const result = await CustomerService.create(user_id, options)
 
     if (!result) {
       res.status(500).send({
-        message: "Can not create device!",
+        message: "Can not create customer!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
@@ -52,17 +52,17 @@ module.exports = {
     }
 
     res.status(200).send({
-      message: "Create device successful!"
+      message: "Create customer successful!"
     })
   },
 
-  async updateDevice(req, res) {
-    const deviceId = req.params.deviceId
+  async updateCustomer(req, res) {
+    const customerId = req.params.customerId
     const options = req.body
-    const result = await DeviceService.update(deviceId, options)
+    const result = await CustomerService.update(customerId, options)
     if (!result) {
       res.status(500).send({
-        message: "Can not update device!",
+        message: "Can not update customer!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
@@ -70,17 +70,17 @@ module.exports = {
       return
     }
     res.status(200).send({
-      message: "Update device successful!"
+      message: "Update customer successful!"
     })
   },
 
-  async removeDevice(req, res) {
-    const deviceId = req.params.deviceId
+  async removeCustomer(req, res) {
+    const customerId = req.params.customerId
 
-    const result = await DeviceService.delete(deviceId)
+    const result = await CustomerService.delete(customerId)
     if (!result) {
       res.status(500).send({
-        message: "Can not delete device!",
+        message: "Can not delete customer!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
@@ -89,7 +89,7 @@ module.exports = {
     } 
     
     res.status(200).send({
-      message: "Delete device successful!"
+      message: "Delete customer successful!"
     })
   }
 }
