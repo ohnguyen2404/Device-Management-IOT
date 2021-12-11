@@ -1,6 +1,6 @@
 const jwtService = require("../services/jwt")
 const bcrypt = require("bcryptjs")
-//const sequelize = require('sequelize')
+const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 const{User, Role, User_Role, } = require('../models')
 
@@ -69,14 +69,12 @@ const AuthService = {
 
     const signOptions = {
       issuer: process.env.JWT_ISSUER,
-      subject: process.env.JWT_SUBJECT_SIGN_IN,
-      audience: process.env.JWT_AUDIENCE
     }
 
     const token = jwtService.sign({id: user.id}, signOptions)
 
     return {
-      status: 200,
+      status: StatusCodes.OK,
       id: user.id,
       email: user.email,
       roles: userRoles,

@@ -10,7 +10,7 @@ checkDuplicateEmail = async (req, res, next) => {
   })
 
   if (user) {
-    res.status(400).send({
+    res.status(StatusCodes.BAD_REQUEST).send({
       message: "Register fail! Email is already in use.",
       HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
       statusValue: StatusCodes.BAD_REQUEST,
@@ -28,7 +28,7 @@ checkRolesExisted = async (req, res, next) => {
   if (roles) {
     roles.forEach((role) => {
       if (!Role.defaultRoles.includes(role)) {
-        res.status(400).send({
+        res.status(StatusCodes.BAD_REQUEST).send({
           message: "Register fail! Invalid roles.",
           HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
           statusValue: StatusCodes.BAD_REQUEST,

@@ -41,13 +41,13 @@ validateField = (field) => {
       next()
       return
     }
-    res.status(400).send({ message: req.body[field] + " " + error })
+    res.status(StatusCodes.BAD_REQUEST).send({ message: req.body[field] + " " + error })
   }
 }
 
 validateUUID = (uuid, res) => {
   if (!uuidValidate.validate(uuid)) {
-    res.status(400).send({
+    res.status(StatusCodes.BAD_REQUEST).send({
       message: `Wrong UUID format!`,
       HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
       statusValue: StatusCodes.BAD_REQUEST,
@@ -68,7 +68,7 @@ checkExistedDeviceId = async (req, res, next) => {
   const device = await Device.findByPk(deviceId)
 
   if (!device) {
-    res.status(400).send({
+    res.status(StatusCodes.BAD_REQUEST).send({
       message: `Device with UUID ${deviceId} not found!`,
       HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
       statusValue: StatusCodes.BAD_REQUEST,
@@ -89,7 +89,7 @@ checkExistedCustomerId = async (req, res, next) => {
   
   const customer = await Customer.findByPk(customerId)
   if (!customer) {
-    res.status(500).send({
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       message: `Customer with UUID ${customerId} not found!`,
       HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
       statusValue: StatusCodes.BAD_REQUEST,
@@ -110,7 +110,7 @@ checkExistedTenantId = async (req, res, next) => {
 
   const tenant = await Tenant.findByPk(tenantId)
   if (!tenant) {
-    res.status(500).send({
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       message: `Tenant with UUID ${tenantId} not found!`,
       HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
       statusValue: StatusCodes.BAD_REQUEST,

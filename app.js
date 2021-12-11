@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 // Set up .env file
 require('dotenv').config();
@@ -33,7 +34,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 require('./server/routes')(app);
 
 // Setup a default catch-all route that sends back a welcome message in JSON format.
-app.get('*', (req, res) => res.status(200).send({
+app.get('*', (req, res) => res.status(StatusCodes.OK).send({
   message: 'Welcome to the beginning.',
 }));
 

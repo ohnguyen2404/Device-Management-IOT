@@ -1,5 +1,5 @@
 const customerController = require('../controllers').customer
-const {validator} = require('../middleware')
+const {validator, authJwt} = require('../middleware')
 
 module.exports = (app) => {
   app.use((req, res, next) => {
@@ -10,16 +10,42 @@ module.exports = (app) => {
     next();
   })
  
-  app.get("/customers", customerController.getAllCustomers)
+  app.get(
+    "/customers",
+    [
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin
+    ],
+    customerController.getAllCustomers)
   app.get(
     "/customers/:customerId",
     [
+      authJwt.verifyToken,
       validator.checkExistedCustomerId
     ],
-    customerController.getCustomer
-    )
-  app.put("/customers/:customerId", customerController.updateCustomer)
-  app.delete("/customers/:customerId", customerController.removeCustomer)
+    customerController.getCustomer)
+  app.put(
+    "/customers/:customerId",
+    [
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin,
+      validator.checkExistedCustomerId
+    ],
+    customerController.updateCustomer)
+  app.delete(
+    "/customers/:customerId",
+    [
+      authJwt.verifyToken,
+      authJwt.isAdmin,
+      validator.checkExistedCustomerId
+    ],
+    customerController.removeCustomer)
   
-  app.post("/customer", customerController.createCustomer)
+  app.post(
+    "/customer",
+    [
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin,
+    ],
+    customerController.createCustomer)
 }

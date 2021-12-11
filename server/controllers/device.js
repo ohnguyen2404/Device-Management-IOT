@@ -8,7 +8,7 @@ module.exports = {
     const result = await DeviceService.getAll(tenant_id, customer_id)
 
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not get devices!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -17,7 +17,7 @@ module.exports = {
       return
     }
 
-    res.status(200).send(result)
+    res.status(StatusCodes.OK).send(result)
   },
 
   async getDevice(req, res) {
@@ -25,7 +25,7 @@ module.exports = {
     const result = await DeviceService.get(deviceId)
 
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: `Can not get device with UUID: ${deviceId}!`,
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -34,7 +34,7 @@ module.exports = {
       return
     }
 
-    res.status(200).send(result)
+    res.status(StatusCodes.OK).send(result)
   },
 
   async createDevice(req, res) {
@@ -42,7 +42,7 @@ module.exports = {
     const result = await DeviceService.create(tenant_id, options)
 
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not create device!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -51,7 +51,7 @@ module.exports = {
       return
     }
 
-    res.status(200).send({
+    res.status(StatusCodes.OK).send({
       message: "Create device successful!"
     })
   },
@@ -61,7 +61,7 @@ module.exports = {
     const options = req.body
     const result = await DeviceService.update(deviceId, options)
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not update device!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -69,7 +69,7 @@ module.exports = {
       })
       return
     }
-    res.status(200).send({
+    res.status(StatusCodes.OK).send({
       message: "Update device successful!"
     })
   },
@@ -79,7 +79,7 @@ module.exports = {
 
     const result = await DeviceService.delete(deviceId)
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not delete device!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -88,7 +88,7 @@ module.exports = {
       return
     } 
     
-    res.status(200).send({
+    res.status(StatusCodes.OK).send({
       message: "Delete device successful!"
     })
   }

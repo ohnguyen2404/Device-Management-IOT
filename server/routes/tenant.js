@@ -1,5 +1,5 @@
 const tenantController = require('../controllers').tenant
-const {validator} = require('../middleware')
+const {validator, authJwt} = require('../middleware')
 
 module.exports = (app) => {
   app.use((req, res, next) => {
@@ -10,16 +10,38 @@ module.exports = (app) => {
     next();
   })
  
-  app.get("/tenants", tenantController.getAllTenants)
+  app.get(
+    "/tenants",
+    [
+      authJwt.verifyToken,
+      authJwt.isAdmin
+    ],
+    tenantController.getAllTenants)
   app.get(
     "/tenants/:tenantId",
     [
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin,
       validator.checkExistedTenantId
     ],
     tenantController.getTenant
     )
-  app.put("/tenants/:tenantId", tenantController.updateTenant)
-  app.delete("/tenants/:tenantId", tenantController.removeTenant)
+  app.put(
+    "/tenants/:tenantId",
+    [
+      authJwt.verifyToken,
+      authJwt.isAdmin,
+      validator.checkExistedTenantId
+    ],
+    tenantController.updateTenant)
+  app.delete(
+    "/tenants/:tenantId",
+    [
+      authJwt.verifyToken,
+      authJwt.isAdmin,
+      validator.checkExistedTenantId
+    ],
+    tenantController.removeTenant)
   
   app.post("/tenant", tenantController.createTenant)
 }

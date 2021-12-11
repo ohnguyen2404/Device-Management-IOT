@@ -9,7 +9,7 @@ module.exports = {
     const result = await AuthService.register(email, password, roles)
     
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "User register failed!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -18,7 +18,7 @@ module.exports = {
       return
     }
 
-    res.status(200).send({message: "User registered success!"})
+    res.status(StatusCodes.OK).send({message: "User registered success!"})
 
   },
 

@@ -1,55 +1,77 @@
 const jwtService = require('../services/jwt')
-const db = require('../models');
-const { Role } = require('../models');
-const User = db.User
+const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"]
 
   if (!token) {
-    return res.status(403).send({
+    return res.status(StatusCodes.FORBIDDEN).send({
       message: "No token provided!"
     })
   }
 
   const verifyOptions = {
     issuer: process.env.JWT_ISSUER,
-    subject: process.env.JWT_SUBJECT_SIGN_IN,
-    audience: process.env.JWT_AUDIENCE
   }
 
   const legit = jwtService.verify(token, verifyOptions)
   if (!legit) {
-    return res.status(401).send({message: "Unauthorized!"});
+    return res.status(StatusCodes.UNAUTHORIZED).send({message: "Unauthorized!"});
   }
-  
-  req.userId = jwtService.decode(token).payload.id
-  next()
 
+  req.userId = jwtService.decode(token).payload.id
+  req.authorities = jwtService.decode(token).payload.authorities
+
+  next()
 }
 
 isAdmin = async (req, res, next) => {
-  const user = await User.findByPk(req.userId, {
-    include: {
-      model: Role
+  let isValid = false
+
+  req.authorities.forEach((role) => {
+    if (role === "ADMIN") {
+      isValid = true
     }
   })
 
-  let isAdmin = false
-  user.roles.forEach((role) => {
-    if (role.name === "ADMIN") {
-      isAdmin = true
-    }
-  })
-
-  isAdmin
+  isValid
   ? next()
-  : res.status(403).send({message: "Require Admin role!"}) 
+  : res.status(StatusCodes.FORBIDDEN).send({message: "Require Admin role!"}) 
+}
+
+isTenantOrAdmin = async (req, res, next) => {
+  let isValid = false
+
+  req.authorities.forEach((role) => {
+    if (role === "TENANT" || role === "ADMIN") {
+      isValid = true
+    }
+  })
+
+  isValid
+  ? next()
+  : res.status(StatusCodes.FORBIDDEN).send({message: "Require Tenant role!"}) 
+}
+
+isCustomer = async (req, res, next) => {
+  let isValid = false
+
+  req.authorities.forEach((role) => {
+    if (role === "CUSTOMER") {
+      isValid = true
+    }
+  })
+
+  isValid
+  ? next()
+  : res.status(StatusCodes.FORBIDDEN).send({message: "Require Customer role!"}) 
 }
 
 const authJwt = {
   verifyToken: verifyToken,
-  isAdmin: isAdmin
+  isAdmin: isAdmin,
+  isTenantOrAdmin: isTenantOrAdmin,
+  isCustomer: isCustomer
 }
 
 module.exports = authJwt;

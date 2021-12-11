@@ -1,5 +1,5 @@
 const deviceController = require('../controllers').device
-const {validator} = require('../middleware')
+const {validator, authJwt} = require('../middleware')
 
 module.exports = (app) => {
   app.use((req, res, next) => {
@@ -13,17 +13,38 @@ module.exports = (app) => {
   app.get(
     "/devices",
     [
-      
+      authJwt.verifyToken
     ],
     deviceController.getAllDevices)
   app.get(
     "/devices/:deviceId",
     [
+      authJwt.verifyToken,
       validator.checkExistedDeviceId
     ],
     deviceController.getDevice)
-  app.put("/devices/:deviceId", deviceController.updateDevice)
-  app.delete("/devices/:deviceId", deviceController.removeDevice)
+  app.put(
+    "/devices/:deviceId",
+    [
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin,
+      validator.checkExistedDeviceId
+    ],
+    deviceController.updateDevice)
+  app.delete(
+    "/devices/:deviceId",
+    [
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin,
+      validator.checkExistedDeviceId
+    ],
+    deviceController.removeDevice)
   
-  app.post("/device", deviceController.createDevice)
+  app.post(
+    "/device",
+    [
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin
+    ],
+    deviceController.createDevice)
 }

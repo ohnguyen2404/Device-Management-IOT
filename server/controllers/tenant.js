@@ -6,7 +6,7 @@ module.exports = {
     const result = await TenantService.getAll()
 
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not get tenants!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -15,7 +15,7 @@ module.exports = {
       return
     }
 
-    res.status(200).send(result)
+    res.status(StatusCodes.OK).send(result)
   },
 
   async getTenant(req, res) {
@@ -23,7 +23,7 @@ module.exports = {
     const result = await TenantService.get(tenantId)
 
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: `Can not get tenant with UUID: ${tenantId}!`,
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -32,7 +32,7 @@ module.exports = {
       return
     }
 
-    res.status(200).send(result)
+    res.status(StatusCodes.OK).send(result)
   },
 
   async createTenant(req, res) {
@@ -40,7 +40,7 @@ module.exports = {
     const result = await TenantService.create(user_id, options)
 
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not create tenant!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -49,7 +49,7 @@ module.exports = {
       return
     }
 
-    res.status(200).send({
+    res.status(StatusCodes.OK).send({
       message: "Create tenant successful!"
     })
   },
@@ -59,7 +59,7 @@ module.exports = {
     const options = req.body
     const result = await TenantService.update(tenantId, options)
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not update tenant!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -67,7 +67,7 @@ module.exports = {
       })
       return
     }
-    res.status(200).send({
+    res.status(StatusCodes.OK).send({
       message: "Update tenant successful!"
     })
   },
@@ -77,7 +77,7 @@ module.exports = {
 
     const result = await TenantService.delete(tenantId)
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not delete tenant!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -86,7 +86,7 @@ module.exports = {
       return
     } 
     
-    res.status(200).send({
+    res.status(StatusCodes.OK).send({
       message: "Delete tenant successful!"
     })
   }

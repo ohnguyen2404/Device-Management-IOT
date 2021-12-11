@@ -8,7 +8,7 @@ module.exports = {
     const result = await CustomerService.getAll(tenant_id)
 
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not get customers!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -17,7 +17,7 @@ module.exports = {
       return
     }
 
-    res.status(200).send(result)
+    res.status(StatusCodes.OK).send(result)
   },
 
   async getCustomer(req, res) {
@@ -25,7 +25,7 @@ module.exports = {
     const result = await CustomerService.get(customerId)
 
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: `Can not get customer with UUID: ${customerId}!`,
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -34,7 +34,7 @@ module.exports = {
       return
     }
 
-    res.status(200).send(result)
+    res.status(StatusCodes.OK).send(result)
   },
 
   async createCustomer(req, res) {
@@ -42,7 +42,7 @@ module.exports = {
     const result = await CustomerService.create(user_id, options)
 
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not create customer!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -51,7 +51,7 @@ module.exports = {
       return
     }
 
-    res.status(200).send({
+    res.status(StatusCodes.OK).send({
       message: "Create customer successful!"
     })
   },
@@ -61,7 +61,7 @@ module.exports = {
     const options = req.body
     const result = await CustomerService.update(customerId, options)
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not update customer!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -69,7 +69,7 @@ module.exports = {
       })
       return
     }
-    res.status(200).send({
+    res.status(StatusCodes.OK).send({
       message: "Update customer successful!"
     })
   },
@@ -79,7 +79,7 @@ module.exports = {
 
     const result = await CustomerService.delete(customerId)
     if (!result) {
-      res.status(500).send({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not delete customer!",
         HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -88,7 +88,7 @@ module.exports = {
       return
     } 
     
-    res.status(200).send({
+    res.status(StatusCodes.OK).send({
       message: "Delete customer successful!"
     })
   }

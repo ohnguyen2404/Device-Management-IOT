@@ -9,8 +9,6 @@ module.exports = {
     // Token signing options
     const signOptions = {
       issuer: $Options.issuer,
-      subject: $Options.subject,
-      audience: $Options.audience,
       expiresIn: process.env.JWT_EXPIRES_IN,
       algorithm: process.env.JWT_ALGORITHM
     }
@@ -21,8 +19,6 @@ module.exports = {
   verify: (token, $Options) => {
     const verifyOptions = {
       issuer: $Options.issuer,
-      subject: $Options.subject,
-      audience: $Options.audience,
       expiresIn: process.env.JWT_EXPIRES_IN,
       algorithm: [process.env.JWT_ALGORITHM]
     }
