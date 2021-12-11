@@ -27,7 +27,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING
     },
     name: {
-      type: Sequelize.JSON
+      type: Sequelize.STRING
     },
     label: {
       type: Sequelize.STRING

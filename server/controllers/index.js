@@ -1,5 +1,9 @@
-const users = require('./user')
+const user = require('./user')
+const auth = require('./auth')
+const device = require('./device')
 
 module.exports = {
-  users
+  user,
+  auth,
+  device
 }
