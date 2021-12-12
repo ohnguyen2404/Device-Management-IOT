@@ -1,11 +1,12 @@
 const customerController = require('../controllers').customer
 const {validator, authJwt} = require('../middleware')
+const constants = require('../../constant')
 
 module.exports = (app) => {
   app.use((req, res, next) => {
     res.header(
       "Access-Control-Allow_Headers",
-      "Authorization, Origin, Content-Type, Accept"
+      `${constants.TOKEN_HEADER}, Origin, Content-Type, Accept`
     )
     next();
   })

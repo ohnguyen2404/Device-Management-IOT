@@ -9,6 +9,6 @@ module.exports = {
   DATABASE_PORT: process.env.DB_PORT,  
   DATABASE_DIALECT: process.env.DB_DIALECT,
 
-  // Auth
-  
+  // Token header
+  TOKEN_HEADER: "Authorization"
 }

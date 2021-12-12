@@ -1,8 +1,9 @@
 const jwtService = require('../services/jwt')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
+const constants = require('../../constant')
 
 verifyToken = (req, res, next) => {
-  let token = req.headers["authorization"]
+  let token = req.headers[constants.TOKEN_HEADER.toLowerCase()]
   if (token.startsWith("Bearer ")){
     token = token.substring(7, token.length);
   } 
@@ -11,6 +12,7 @@ verifyToken = (req, res, next) => {
       message: "Wrong token type provided!"
     })
   }
+
   if (!token) {
     return res.status(StatusCodes.FORBIDDEN).send({
       message: "No token provided!"
@@ -34,7 +36,6 @@ verifyToken = (req, res, next) => {
 
 isAdmin = async (req, res, next) => {
   let isValid = false
-  console.log('req', req);
   req.authorities.forEach((role) => {
     if (role === "ADMIN") {
       isValid = true
