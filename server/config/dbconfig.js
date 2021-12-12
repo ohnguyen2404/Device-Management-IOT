@@ -1,28 +1,29 @@
 require('dotenv').config();
+const constants = require('../../constant')
 
 module.exports = {
   "development": {
-    "username": process.env.DB_USERNAME,
-    "password": process.env.DB_PASSWORD,
-    "database": process.env.DB_NAME,
-    "host": process.env.DB_HOST,
-    "port": process.env.DB_PORT,  
-    "dialect": process.env.DB_DIALECT
+    "username": constants.DATABASE_USERNAME,
+    "password": constants.DATABASE_PASSWORD,
+    "database": constants.DATABASE_NAME,
+    "host": constants.DATABASE_HOST,
+    "port": constants.DATABASE_PORT,  
+    "dialect": constants.DATABASE_DIALECT
   },
   "test": {
-    "username": process.env.DB_USERNAME,
-    "password": process.env.DB_PASSWORD,
-    "database": process.env.DB_NAME,
-    "host": process.env.DB_HOST,
-    "port": process.env.DB_PORT,  
-    "dialect": process.env.DB_DIALECT
+    "username": constants.DATABASE_USERNAME,
+    "password": constants.DATABASE_PASSWORD,
+    "database": constants.DATABASE_NAME,
+    "host": constants.DATABASE_HOST,
+    "port": constants.DATABASE_PORT,  
+    "dialect": constants.DATABASE_DIALECT
   },
   "production": {
-    "username": process.env.DB_USERNAME,
-    "password": process.env.DB_PASSWORD,
-    "database": process.env.DB_NAME,
-    "host": process.env.DB_HOST,
-    "port": process.env.DB_PORT,  
-    "dialect": process.env.DB_DIALECT
+    "username": constants.DATABASE_USERNAME,
+    "password": constants.DATABASE_PASSWORD,
+    "database": constants.DATABASE_NAME,
+    "host": constants.DATABASE_HOST,
+    "port": constants.DATABASE_PORT,  
+    "dialect": constants.DATABASE_DIALECT
   }
 }

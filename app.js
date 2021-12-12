@@ -15,7 +15,7 @@ app.use(logger('dev'));
 
 // CORS configuration
 const corsOptions = {
-  origin: "http://localhost:3000"
+  origin: ["http://localhost:3000", "http://localhost:8080"]
 }
 
 app.use(cors(corsOptions))
