@@ -1,6 +1,6 @@
 const deviceController = require('../controllers').device
 const {validator, authJwt} = require('../middleware')
-const constants = require('../../constant')
+const constants = require('../helpers/constant')
 
 module.exports = (app) => {
   app.use((req, res, next) => {

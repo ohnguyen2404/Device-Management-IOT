@@ -10,5 +10,8 @@ module.exports = {
   DATABASE_DIALECT: process.env.DB_DIALECT,
 
   // Token header
-  TOKEN_HEADER: "Authorization"
+  TOKEN_HEADER: "Authorization",
+
+  // API URL
+  IOT_CORE_URL: process.env.IOT_CORE_URL
 }

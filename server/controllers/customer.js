@@ -38,8 +38,8 @@ module.exports = {
   },
 
   async createCustomer(req, res) {
-    const {userId, ...options} = req.body
-    const result = await CustomerService.create(userId, options)
+    const options = req.body
+    const result = await CustomerService.create(req.userId, options)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

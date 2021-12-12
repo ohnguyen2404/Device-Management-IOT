@@ -28,9 +28,7 @@ const CustomerDAO = {
   },
 
   async create(userId, options) {
-
     console.log('options', options);
-
     try {
       await Customer.create({
         ...options,
@@ -52,6 +50,7 @@ const CustomerDAO = {
         {...options},
         {where: {id: customerId}}
       )
+
       return true
     }
     catch (e) {
@@ -66,6 +65,7 @@ const CustomerDAO = {
         {deleted: true},
         {where: {id: customerId}}
       )
+      
       return true
     }
     catch (e) {

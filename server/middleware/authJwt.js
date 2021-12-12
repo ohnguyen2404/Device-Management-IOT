@@ -1,9 +1,24 @@
 const jwtService = require('../services/jwt')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
-const constants = require('../../constant')
+const constants = require('../helpers/constant')
+
+checkRoleExist = (userRoles, checkRole) => {
+  userRoles.forEach(role => {
+    if (role === checkRole) return true
+  })
+
+  return false
+}
 
 verifyToken = (req, res, next) => {
   let token = req.headers[constants.TOKEN_HEADER.toLowerCase()]
+
+  if (!token) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      message: "No token provided!"
+    })
+  }
+
   if (token.startsWith("Bearer ")){
     token = token.substring(7, token.length);
   } 
@@ -13,66 +28,50 @@ verifyToken = (req, res, next) => {
     })
   }
 
-  if (!token) {
-    return res.status(StatusCodes.FORBIDDEN).send({
-      message: "No token provided!"
-    })
-  }
-
   const verifyOptions = {
     issuer: process.env.JWT_ISSUER,
   }
-
   const legit = jwtService.verify(token, verifyOptions)
   if (!legit) {
     return res.status(StatusCodes.UNAUTHORIZED).send({message: "Unauthorized!"});
   }
 
-  req.userId = jwtService.decode(token).payload.sub
-  req.authorities = jwtService.decode(token).payload.authorities
+  const {sub, authorities} = jwtService.decode(token).payload
+  if (!sub || !authorities) {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      message: "Missing attribute sub or authorities from token!"
+    })
+  }
 
+  req.userId = sub
+  req.authorities = authorities
+  console.log('authorities', authorities);
   next()
 }
 
 isAdmin = async (req, res, next) => {
-  let isValid = false
-  req.authorities.forEach((role) => {
-    if (role === "ADMIN") {
-      isValid = true
-    }
-  })
-
+  let isValid = checkRoleExist(req.authorities, "ADMIN")
   isValid
-  ? next()
-  : res.status(StatusCodes.FORBIDDEN).send({message: "Require Admin role!"}) 
+    ? next()
+    : res.status(StatusCodes.FORBIDDEN).send({message: "Require Admin role!"}) 
 }
 
 isTenantOrAdmin = async (req, res, next) => {
-  let isValid = false
-
-  req.authorities.forEach((role) => {
-    if (role === "TENANT" || role === "ADMIN") {
-      isValid = true
-    }
-  })
+  let isValid = 
+    checkRoleExist(req.authorities, "ADMIN") ||
+    checkRoleExist(req.authorities, "TENANT")
 
   isValid
-  ? next()
-  : res.status(StatusCodes.FORBIDDEN).send({message: "Require Tenant role!"}) 
+    ? next()
+    : res.status(StatusCodes.FORBIDDEN).send({message: "Require Tenant role!"}) 
 }
 
 isCustomer = async (req, res, next) => {
-  let isValid = false
-
-  req.authorities.forEach((role) => {
-    if (role === "CUSTOMER") {
-      isValid = true
-    }
-  })
+  let isValid = checkRoleExist(req.authorities, "CUSTOMER")
 
   isValid
-  ? next()
-  : res.status(StatusCodes.FORBIDDEN).send({message: "Require Customer role!"}) 
+    ? next()
+    : res.status(StatusCodes.FORBIDDEN).send({message: "Require Customer role!"}) 
 }
 
 const authJwt = {

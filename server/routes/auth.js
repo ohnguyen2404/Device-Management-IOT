@@ -1,6 +1,6 @@
 const {verifySignUp, validator} = require('../middleware')
 const authController = require('../controllers/auth')
-const constants = require('../../constant')
+const constants = require('../helpers/constant')
 
 module.exports = (app) => {
   app.use((req, res, next) => {

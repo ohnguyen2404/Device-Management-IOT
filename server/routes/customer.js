@@ -1,6 +1,6 @@
 const customerController = require('../controllers').customer
 const {validator, authJwt} = require('../middleware')
-const constants = require('../../constant')
+const constants = require('../helpers/constant')
 
 module.exports = (app) => {
   app.use((req, res, next) => {
@@ -45,8 +45,7 @@ module.exports = (app) => {
   app.post(
     "/customer",
     [
-      authJwt.verifyToken,
-      authJwt.isTenantOrAdmin,
+      //authJwt.verifyToken
     ],
     customerController.createCustomer)
 }
