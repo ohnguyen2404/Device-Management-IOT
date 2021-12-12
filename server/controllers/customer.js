@@ -3,9 +3,9 @@ const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
   async getAllCustomers(req, res) {
-    const {tenant_id} = req.body
+    const {tenantId} = req.body
 
-    const result = await CustomerService.getAll(tenant_id)
+    const result = await CustomerService.getAll(tenantId)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -38,8 +38,8 @@ module.exports = {
   },
 
   async createCustomer(req, res) {
-    const {user_id, ...options} = req.body
-    const result = await CustomerService.create(user_id, options)
+    const {userId, ...options} = req.body
+    const result = await CustomerService.create(userId, options)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

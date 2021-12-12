@@ -6,14 +6,14 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.UUID,
       primaryKey: true
     },
-    tenant_id: {
+    tenantId: {
       type: Sequelize.UUID,
       references: {
         model: 'tenant',
         key: 'id'
       }
     },
-    customer_id: {
+    customerId: {
       type: Sequelize.UUID,
       references: {
         model: 'customer',
@@ -42,10 +42,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.BOOLEAN,
       defaultValue: false
     },
-    created_uid: {
+    createUid: {
       type: Sequelize.UUID
     },
-    update_uid: {
+    updateUid: {
       type: Sequelize.UUID
     }
 

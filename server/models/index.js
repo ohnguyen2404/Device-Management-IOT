@@ -30,28 +30,28 @@ db.Tenant = require('../models/tenant')(sequelize, Sequelize);
 
 db.User.belongsToMany(db.Role, {
   through: 'user_role',
-  foreignKey: 'user_id',
+  foreignKey: 'userId',
   otherKey: 'role_id'
 })
 
 db.Role.belongsToMany(db.User, {
   through: 'user_role',
   foreignKey: 'role_id',
-  otherKey: 'user_id'
+  otherKey: 'userId'
 });
 
-db.Tenant.hasMany(db.Device, {foreignKey: 'tenant_id'})
-db.Tenant.hasMany(db.User, {foreignKey: 'tenant_id'})
-db.Tenant.hasMany(db.Customer, {foreignKey: 'tenant_id'})
+db.Tenant.hasMany(db.Device, {foreignKey: 'tenantId'})
+db.Tenant.hasMany(db.User, {foreignKey: 'tenantId'})
+db.Tenant.hasMany(db.Customer, {foreignKey: 'tenantId'})
 
-db.Customer.hasMany(db.Device, {foreignKey: 'customer_id'})
-db.Customer.hasMany(db.User, {foreignKey: 'customer_id'})
-db.Customer.belongsTo(db.Tenant, {foreignKey: 'tenant_id'})
+db.Customer.hasMany(db.Device, {foreignKey: 'customerId'})
+db.Customer.hasMany(db.User, {foreignKey: 'customerId'})
+db.Customer.belongsTo(db.Tenant, {foreignKey: 'tenantId'})
 
-db.Device.belongsTo(db.Tenant, {foreignKey: 'tenant_id'})
-db.Device.belongsTo(db.Customer, {foreignKey: 'customer_id'})
+db.Device.belongsTo(db.Tenant, {foreignKey: 'tenantId'})
+db.Device.belongsTo(db.Customer, {foreignKey: 'customerId'})
 
-db.User.belongsTo(db.Tenant, {foreignKey: 'tenant_id'})
-db.User.belongsTo(db.Customer, {foreignKey: 'customer_id'})
+db.User.belongsTo(db.Tenant, {foreignKey: 'tenantId'})
+db.User.belongsTo(db.Customer, {foreignKey: 'customerId'})
 
 module.exports = db;

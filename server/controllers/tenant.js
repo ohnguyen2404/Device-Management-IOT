@@ -36,8 +36,8 @@ module.exports = {
   },
 
   async createTenant(req, res) {
-    const {user_id, ...options} = req.body
-    const result = await TenantService.create(user_id, options)
+    const options = req.body
+    const result = await TenantService.create(req.userId, options)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

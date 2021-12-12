@@ -19,7 +19,7 @@ const AuthService = {
 
       validRoles.forEach(async (role) => {
         await User_Role.create({
-          user_id: newUser.id,
+          userId: newUser.id,
           role_id: role.id
         })
       })

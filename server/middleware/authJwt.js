@@ -19,7 +19,7 @@ verifyToken = (req, res, next) => {
     return res.status(StatusCodes.UNAUTHORIZED).send({message: "Unauthorized!"});
   }
 
-  req.userId = jwtService.decode(token).payload.id
+  req.userId = jwtService.decode(token).payload.sub
   req.authorities = jwtService.decode(token).payload.authorities
 
   next()
@@ -27,7 +27,7 @@ verifyToken = (req, res, next) => {
 
 isAdmin = async (req, res, next) => {
   let isValid = false
-
+  console.log('req', req);
   req.authorities.forEach((role) => {
     if (role === "ADMIN") {
       isValid = true

@@ -1,66 +1,24 @@
-const {Tenant} = require('../models')
+const TenantDAO = require('../dao/tenant')
 
 const TenantService = {
   async getAll() {
-    const tenants = await Tenant.findAll()
-    return tenants
+    return await TenantDAO.getAll
   },
 
   async get(tenantId) {
-    try {
-      return await Tenant.findByPk(tenantId)
-    }
-    catch (e) {
-      console.log('error', e.message);
-      return false
-    }
+    return await TenantDAO.get(tenantId)
   },
 
-  async create(user_id, options) {
-
-    console.log('options', options);
-
-    try {
-      await Tenant.create({
-        ...options,
-        user_id
-      })
-
-      return true
-    }
-    catch(e) {
-      console.log('error', e.message);
-      return false
-    }
+  async create(userId, options) {
+    return await TenantDAO.create(userId, options)
   },
 
   async update(tenantId, options) {
-    console.log('options', options);
-    try {
-      await Tenant.update(
-        {...options},
-        {where: {id: tenantId}}
-      )
-      return true
-    }
-    catch (e) {
-      console.log('error', e.message);
-      return false
-    }
+    return await TenantDAO.update(tenantId, options)
   },
 
   async delete(tenantId) {
-    try {
-      await Tenant.update(
-        {deleted: true},
-        {where: {id: tenantId}}
-      )
-      return true
-    }
-    catch (e) {
-      console.log('error', e.message);
-      return false
-    }
+    return await TenantDAO.delete(tenantId)
   }
 }
 

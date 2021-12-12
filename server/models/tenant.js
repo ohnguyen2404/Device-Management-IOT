@@ -6,7 +6,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.UUID,
       primaryKey: true
     },
-    user_id: {
+    userId: {
       type: Sequelize.UUID,
       allowNull: true
     },
@@ -35,10 +35,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.BOOLEAN,
       defaultValue: false
     },
-    created_uid: {
+    createUid: {
       type: Sequelize.UUID
     },
-    update_uid: {
+    updateUid: {
       type: Sequelize.UUID
     }
   }, {

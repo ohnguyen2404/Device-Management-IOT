@@ -43,5 +43,10 @@ module.exports = (app) => {
     ],
     tenantController.removeTenant)
   
-  app.post("/tenant", tenantController.createTenant)
+  app.post(
+    "/tenant",
+    [
+      authJwt.verifyToken
+    ],
+    tenantController.createTenant)
 }
