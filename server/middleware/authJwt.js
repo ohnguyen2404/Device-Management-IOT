@@ -2,8 +2,15 @@ const jwtService = require('../services/jwt')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 verifyToken = (req, res, next) => {
-  let token = req.headers["x-access-token"]
-
+  let token = req.headers["authorization"]
+  if (token.startsWith("Bearer ")){
+    token = token.substring(7, token.length);
+  } 
+  else {
+    return res.status(StatusCodes.FORBIDDEN).send({
+      message: "Wrong token type provided!"
+    })
+  }
   if (!token) {
     return res.status(StatusCodes.FORBIDDEN).send({
       message: "No token provided!"
