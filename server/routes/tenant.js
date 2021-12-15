@@ -47,7 +47,13 @@ module.exports = (app) => {
   app.post(
     "/tenant",
     [
-      authJwt.verifyToken
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin
     ],
+    tenantController.createTenant)
+
+  // Public end-point for register tenant after register new account
+  app.post(
+    "/auth/register-tenant",
     tenantController.createTenant)
 }

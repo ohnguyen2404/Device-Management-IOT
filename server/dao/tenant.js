@@ -18,14 +18,13 @@ const TenantDAO = {
     }
   },
 
-  async create(userId, options) {
+  async create(userId, createUid, options) {
     console.log('options', options);
-
     try {
       await Tenant.create({
         ...options,
         userId,
-        createUid: userId
+        createUid
       })
 
       return true
@@ -63,7 +62,21 @@ const TenantDAO = {
       console.log('error', e.message);
       return false
     }
-  }
+  },
+
+  async register(userId, email) {
+    try {
+      await Tenant.create({
+        userId,
+        email
+      })
+      return true
+    }
+    catch(e) {
+      console.log('error', e.message);
+      return false
+    }
+  },
 }
 
 module.exports = TenantDAO

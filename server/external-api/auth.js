@@ -1,17 +1,26 @@
 const axiosApi = require("../helpers/axiosApi");
-const constants = require("../helpers/constant");
+const authHeader = require("../helpers/authHeader")
+const constants = require("../helpers/constant")
 
 const AuthApi = {
-  register(data) {
-    console.log("data", data);
-    axiosApi.post('/auth/register', data).then(
-      (response) => {
-        console.log("response", response);
-      },
-      (error) => {
-        console.log("error", error);
-      }
-    );
+  async register(data, token) {
+    console.log('data', data);
+    console.log('authHeader(token)', authHeader(token));
+
+    try {
+      const response = await axiosApi.post(
+        '/user', 
+        data, 
+        {headers: authHeader(token)}
+      )
+
+      return response.userId
+    }
+
+    catch (e) {
+      console.log('error', e.message);
+      return false
+    }
   },
 };
 

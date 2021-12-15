@@ -11,6 +11,7 @@ module.exports = {
 
   // Token header
   TOKEN_HEADER: "Authorization",
+  TOKEN_START: "Bearer",
 
   // API URL
   IOT_CORE_URL: process.env.IOT_CORE_URL

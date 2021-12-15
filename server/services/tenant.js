@@ -1,4 +1,5 @@
 const TenantDAO = require('../dao/tenant')
+const AuthApi = require('../external-api/auth')
 
 const TenantService = {
   async getAll() {
@@ -9,8 +10,14 @@ const TenantService = {
     return await TenantDAO.get(tenantId)
   },
 
-  async create(userId, options) {
-    return await TenantDAO.create(userId, options)
+  async create(createUid, options, token) {
+    const {email, firstName, lastName, authorities, ...restOptions} = options
+    const userId = await AuthApi.register({email, firstName, lastName, authorities}, token)
+    
+    if (!userId) {
+      return false
+    }
+    return await TenantDAO.create(userId, createUid, restOptions)
   },
 
   async update(tenantId, options) {
