@@ -14,16 +14,24 @@ const TenantService = {
   async create(createUid, options, token) {
     const {email, firstName, lastName, authorities, ...restOptions} = options
 
-    if (TenantDAO.existsByEmail(email) || CustomerDAO.existsByEmail(email)) {
+    if (await TenantDAO.existsByEmail(email) || await CustomerDAO.existsByEmail(email)) {
       return false
     }
 
-    const userId = await AuthApi.register({email, firstName, lastName, authorities}, token)
-    
+    const userId = await AuthApi.createUser({email, firstName, lastName, authorities}, token)
     if (!userId) {
       return false
     }
-    return await TenantDAO.create(userId, createUid, restOptions)
+    return await TenantDAO.createWithCreateUid(userId, createUid, {email, firstName, lastName, ...restOptions})
+  },
+
+  async register(userId, options) {
+    const {email} = options
+
+    if (await TenantDAO.existsByEmail(email)) {
+      return false
+    }
+    return await TenantDAO.create(userId, options)
   },
 
   async update(tenantId, options) {

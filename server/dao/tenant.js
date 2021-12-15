@@ -27,13 +27,30 @@ const TenantDAO = {
     }
   },
 
-  async create(userId, createUid, options) {
+  async createWithCreateUid(userId, createUid, options) {
     console.log('options', options);
+    console.log("userId", userId)
+    console.log("createUid", createUid)
     try {
       await Tenant.create({
         ...options,
         userId,
         createUid
+      })
+
+      return true
+    } catch(e) {
+      console.log('error', e.message);
+      return false
+    }
+  },
+
+  async create(userId, options) {
+    console.log("***")
+    try {
+      await Tenant.create({
+        ...options,
+        userId
       })
 
       return true

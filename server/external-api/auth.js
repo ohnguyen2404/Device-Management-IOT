@@ -3,7 +3,7 @@ const authHeader = require("../helpers/authHeader")
 const constants = require("../helpers/constant")
 
 const AuthApi = {
-  async register(data, token) {
+  async createUser(data, token) {
     console.log('data', data);
     console.log('authHeader(token)', authHeader(token));
 
@@ -15,9 +15,7 @@ const AuthApi = {
       )
 
       return response.userId
-    }
-
-    catch (e) {
+    } catch (e) {
       console.log('error', e.message);
       return false
     }

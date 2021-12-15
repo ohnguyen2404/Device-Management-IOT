@@ -57,5 +57,8 @@ module.exports = (app) => {
   // Public end-point for register tenant after register new account
   app.post(
     "/auth/register-tenant",
-    tenantController.createTenant)
+    [
+      validator.validateField("email")
+    ],
+    tenantController.registerTenant)
 }

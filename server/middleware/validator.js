@@ -70,17 +70,14 @@ validateAuthorities = async (req, res, next) => {
     return
   }
 
-  authorities.forEach(authority => {
-    let validAuthority = false
-    if (AUTHORITIES.find(auth => auth === authority)) {
-      validauthority = true
-    }
+  for(let i = 0; i < authorities.length; i++) {
+    let authority = authorities[i]
 
-    if (!validAuthority) {
+    if (AUTHORITIES.find(auth => auth === authority) === undefined) { 
       res.status(StatusCodes.BAD_REQUEST).send({ message: authorities + " is invalid"})
       return
     }
-  })
+  }
   next()
 }
 
