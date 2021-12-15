@@ -10,19 +10,14 @@ const CustomerService = {
     return await CustomerDAO.get(customerId)
   },
 
-  async create(userId, options) {
-    //const data = {
-    //  "email": "ntan@gmail.com",
-    //  "firstName": "An",
-    //  "lastName": "Nguyen",
-    //  "password": "123456"
-    //}
-    //const registerUser = await AuthApi.register(data)
-    //if (!registerUser) {
-    //  return false
-    //}
+  async create(createUid, options, token) {
+    const {email, firstName, lastName, authorities, ...restOptions} = options
+    const userId = await AuthApi.register({email, firstName, lastName, authorities}, token)
 
-    return await CustomerDAO.create(userId, options)
+    if (!userId) {
+      return false
+    }
+    return await CustomerDAO.create(userId, createUid, restOptions)
   },
 
   async update(customerId, options) {

@@ -39,7 +39,7 @@ module.exports = {
 
   async createCustomer(req, res) {
     const options = req.body
-    const result = await CustomerService.create(req.userId, options)
+    const result = await CustomerService.create(req.userId, options, req.token)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

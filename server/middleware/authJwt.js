@@ -3,11 +3,14 @@ const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 const constants = require('../helpers/constant')
 
 checkRoleExist = (userRoles, checkRole) => {
+  let isCheck = false
   userRoles.forEach(role => {
-    if (role === checkRole) return true
+    if (role === checkRole) {
+      isCheck = true
+    }
   })
 
-  return false
+  return isCheck
 }
 
 verifyToken = (req, res, next) => {
@@ -45,6 +48,7 @@ verifyToken = (req, res, next) => {
 
   req.userId = sub
   req.authorities = authorities
+  req.token = token
   console.log('authorities', authorities);
   next()
 }
@@ -63,7 +67,7 @@ isTenantOrAdmin = async (req, res, next) => {
 
   isValid
     ? next()
-    : res.status(StatusCodes.FORBIDDEN).send({message: "Require Tenant role!"}) 
+    : res.status(StatusCodes.FORBIDDEN).send({message: "Require Tenant Or Admin role!"}) 
 }
 
 isCustomer = async (req, res, next) => {

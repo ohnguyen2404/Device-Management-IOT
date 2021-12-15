@@ -45,7 +45,8 @@ module.exports = (app) => {
   app.post(
     "/customer",
     [
-      //authJwt.verifyToken
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin
     ],
     customerController.createCustomer)
 }

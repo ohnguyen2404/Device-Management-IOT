@@ -27,14 +27,14 @@ const CustomerDAO = {
     }
   },
 
-  async create(userId, options) {
+  async create(userId, createUid, options) {
     console.log('options', options);
     try {
       await Customer.create({
         ...options,
-        userId
+        userId,
+        createUid
       })
-
       return true
     }
     catch(e) {
