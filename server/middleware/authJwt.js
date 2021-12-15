@@ -22,8 +22,8 @@ verifyToken = (req, res, next) => {
     })
   }
 
-  if (token.startsWith("Bearer ")){
-    token = token.substring(7, token.length);
+  if (token.startsWith(constants.TOKEN_START)){
+    token = token.substring(constants.TOKEN_START.length, token.length);
   } 
   else {
     return res.status(StatusCodes.FORBIDDEN).send({

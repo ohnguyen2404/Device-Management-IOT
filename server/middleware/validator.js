@@ -3,6 +3,7 @@ const { User, Device, Customer, Tenant } = require("../models")
 const uuidValidate = require("uuid")
 
 const { StatusCodes, getReasonPhrase } = require("http-status-codes")
+const { AUTHORITIES } = require("../helpers/constant")
 
 const constraint = {
   email: {
@@ -13,7 +14,8 @@ const constraint = {
   password: {
     presence: true,
     length: {
-      minimum: 6
+      minimum: 6,
+      message: 'must be at least 6 characters'
     }
   },
 
@@ -24,14 +26,15 @@ const constraint = {
   username: {
     presence: true,
     length: {
-      minimum: 3
+      minimum: 3,
+      message: 'must be at least 3 characters'
     },
     format: {
       pattern: "[a-z0-9]+", // Allow only a-z and 0-9
       flags: "i", // Allow upper/lowercase,
       message: "Username can only contain a-z and 0-9"
     }
-  }
+  },
 }
 
 validateField = (field) => {
@@ -57,6 +60,28 @@ validateUUID = (uuid, res) => {
   }
 
   return true
+}
+
+validateAuthorities = async (req, res, next) => {
+  const authorities = req.body.authorities;
+
+  if (authorities.length === 0) {
+    res.status(StatusCodes.BAD_REQUEST).send({ message: authorities + " is empty"})
+    return
+  }
+
+  authorities.forEach(authority => {
+    let validAuthority = false
+    if (AUTHORITIES.find(auth => auth === authority)) {
+      validauthority = true
+    }
+
+    if (!validAuthority) {
+      res.status(StatusCodes.BAD_REQUEST).send({ message: authorities + " is invalid"})
+      return
+    }
+  })
+  next()
 }
 
 checkExistedDeviceId = async (req, res, next) => {
@@ -128,6 +153,7 @@ const validator = {
   checkExistedDeviceId: checkExistedDeviceId,
   checkExistedCustomerId: checkExistedCustomerId,
   checkExistedTenantId: checkExistedTenantId,
+  validateAuthorities: validateAuthorities
 }
 
 module.exports = validator

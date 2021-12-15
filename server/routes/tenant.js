@@ -48,7 +48,9 @@ module.exports = (app) => {
     "/tenant",
     [
       authJwt.verifyToken,
-      authJwt.isTenantOrAdmin
+      authJwt.isTenantOrAdmin,
+      validator.validateField("email"),
+      validator.validateAuthorities
     ],
     tenantController.createTenant)
 

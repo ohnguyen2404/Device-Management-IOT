@@ -8,6 +8,15 @@ const TenantDAO = {
     return tenants
   },
 
+  async existsByEmail(email) {
+    const query = {
+      where: {
+        email
+      }
+    }
+    return await Tenant.findOne(query) !== null
+  },
+
   async get(tenantId) {
     try {
       return await Tenant.findByPk(tenantId)

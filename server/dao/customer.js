@@ -17,6 +17,15 @@ const CustomerDAO = {
     return customers
   },
 
+  async existsByEmail(email) {
+    const query = {
+      where: {
+        email
+      }
+    }
+    return await Customer.findOne(query) !== null
+  },
+
   async get(customerId) {
     try {
       return await Customer.findByPk(customerId)

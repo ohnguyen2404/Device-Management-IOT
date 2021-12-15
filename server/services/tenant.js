@@ -1,4 +1,5 @@
 const TenantDAO = require('../dao/tenant')
+const CustomerDAO = require("../dao/customer")
 const AuthApi = require('../external-api/auth')
 
 const TenantService = {
@@ -12,6 +13,11 @@ const TenantService = {
 
   async create(createUid, options, token) {
     const {email, firstName, lastName, authorities, ...restOptions} = options
+
+    if (TenantDAO.existsByEmail(email) || CustomerDAO.existsByEmail(email)) {
+      return false
+    }
+
     const userId = await AuthApi.register({email, firstName, lastName, authorities}, token)
     
     if (!userId) {
