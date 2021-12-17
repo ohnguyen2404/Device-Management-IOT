@@ -21,24 +21,21 @@ module.exports = (app) => {
   app.get(
     "/customers/:customerId",
     [
-      authJwt.verifyToken,
-      validator.checkExistedCustomerId
+      authJwt.verifyToken
     ],
     customerController.getCustomer)
   app.put(
     "/customers/:customerId",
     [
       authJwt.verifyToken,
-      authJwt.isTenantOrAdmin,
-      validator.checkExistedCustomerId
+      authJwt.isTenantOrAdmin
     ],
     customerController.updateCustomer)
   app.delete(
     "/customers/:customerId",
     [
       authJwt.verifyToken,
-      authJwt.isAdmin,
-      validator.checkExistedCustomerId
+      authJwt.isAdmin
     ],
     customerController.removeCustomer)
   

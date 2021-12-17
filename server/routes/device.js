@@ -20,24 +20,21 @@ module.exports = (app) => {
   app.get(
     "/devices/:deviceId",
     [
-      authJwt.verifyToken,
-      validator.checkExistedDeviceId
+      authJwt.verifyToken
     ],
     deviceController.getDevice)
   app.put(
     "/devices/:deviceId",
     [
       authJwt.verifyToken,
-      authJwt.isTenantOrAdmin,
-      validator.checkExistedDeviceId
+      authJwt.isTenantOrAdmin
     ],
     deviceController.updateDevice)
   app.delete(
     "/devices/:deviceId",
     [
       authJwt.verifyToken,
-      authJwt.isTenantOrAdmin,
-      validator.checkExistedDeviceId
+      authJwt.isTenantOrAdmin
     ],
     deviceController.removeDevice)
   
