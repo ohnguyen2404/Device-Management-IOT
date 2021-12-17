@@ -22,8 +22,7 @@ module.exports = (app) => {
     "/tenants/:tenantId",
     [
       authJwt.verifyToken,
-      authJwt.isTenantOrAdmin,
-      validator.checkExistedTenantId
+      authJwt.isTenantOrAdmin
     ],
     tenantController.getTenant
     )
@@ -31,16 +30,14 @@ module.exports = (app) => {
     "/tenants/:tenantId",
     [
       authJwt.verifyToken,
-      authJwt.isAdmin,
-      validator.checkExistedTenantId
+      authJwt.isAdmin
     ],
     tenantController.updateTenant)
   app.delete(
     "/tenants/:tenantId",
     [
       authJwt.verifyToken,
-      authJwt.isAdmin,
-      validator.checkExistedTenantId
+      authJwt.isAdmin
     ],
     tenantController.removeTenant)
   

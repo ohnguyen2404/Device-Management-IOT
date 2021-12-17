@@ -52,7 +52,7 @@ validateUUID = (uuid, res) => {
   if (!uuidValidate.validate(uuid)) {
     res.status(StatusCodes.BAD_REQUEST).send({
       message: `Wrong UUID format!`,
-      HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
+      status: getReasonPhrase(StatusCodes.BAD_REQUEST),
       statusValue: StatusCodes.BAD_REQUEST,
       timestamp: new Date().toISOString(),
     })
@@ -81,75 +81,8 @@ validateAuthorities = async (req, res, next) => {
   next()
 }
 
-checkExistedDeviceId = async (req, res, next) => {
-  const deviceId = req.params.deviceId
-  if (!validateUUID(deviceId, res)) {
-    return
-  }
-  
-  const device = await Device.findByPk(deviceId)
-
-  if (!device) {
-    res.status(StatusCodes.BAD_REQUEST).send({
-      message: `Device with UUID ${deviceId} not found!`,
-      HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
-      statusValue: StatusCodes.BAD_REQUEST,
-      timestamp: new Date().toISOString(),
-    })
-    return
-  }
-  else {
-    next()
-  }
-}
-
-checkExistedCustomerId = async (req, res, next) => {
-  const customerId = req.params.customerId
-  if (!validateUUID(customerId, res)) {
-    return
-  }
-  
-  const customer = await Customer.findByPk(customerId)
-  if (!customer) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-      message: `Customer with UUID ${customerId} not found!`,
-      HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
-      statusValue: StatusCodes.BAD_REQUEST,
-      timestamp: new Date().toISOString(),
-    })
-    return
-  }
-  else {
-    next()
-  }
-}
-
-checkExistedTenantId = async (req, res, next) => {
-  const tenantId = req.params.tenantId
-  if (!validateUUID(tenantId, res)) {
-    return
-  }
-
-  const tenant = await Tenant.findByPk(tenantId)
-  if (!tenant) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-      message: `Tenant with UUID ${tenantId} not found!`,
-      HttpStatus: getReasonPhrase(StatusCodes.BAD_REQUEST),
-      statusValue: StatusCodes.BAD_REQUEST,
-      timestamp: new Date().toISOString(),
-    })
-    return
-  }
-  else {
-    next()
-  }
-}
-
 const validator = {
   validateField: validateField,
-  checkExistedDeviceId: checkExistedDeviceId,
-  checkExistedCustomerId: checkExistedCustomerId,
-  checkExistedTenantId: checkExistedTenantId,
   validateAuthorities: validateAuthorities
 }
 

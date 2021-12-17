@@ -8,7 +8,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not get tenants!",
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })
@@ -25,7 +25,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: `Can not get tenant with UUID: ${tenantId}!`,
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })
@@ -42,7 +42,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not create tenant!",
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })
@@ -61,7 +61,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not update tenant!",
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })
@@ -79,7 +79,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not delete tenant!",
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })
@@ -98,7 +98,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not register tenant!",
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })

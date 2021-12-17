@@ -10,7 +10,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not get customers!",
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })
@@ -27,7 +27,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: `Can not get customer with UUID: ${customerId}!`,
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })
@@ -44,7 +44,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not create customer!",
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })
@@ -63,7 +63,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not update customer!",
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })
@@ -81,7 +81,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not delete customer!",
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })

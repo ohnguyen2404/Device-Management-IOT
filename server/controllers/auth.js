@@ -11,7 +11,7 @@ module.exports = {
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "User register failed!",
-        HttpStatus: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString()
       })
