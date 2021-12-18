@@ -2,10 +2,9 @@ const {Tenant} = require('../models')
 
 const TenantDAO = {
   async getAll() {
-    const tenants = await Tenant.findAll({
+    return await Tenant.findAll({
       where: {deleted: false}
     })
-    return tenants
   },
 
   async existsByEmail(email) {

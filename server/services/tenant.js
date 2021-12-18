@@ -4,7 +4,7 @@ const AuthApi = require('../external-api/auth')
 
 const TenantService = {
   async getAll() {
-    return await TenantDAO.getAll
+    return await TenantDAO.getAll()
   },
 
   async get(tenantId) {
