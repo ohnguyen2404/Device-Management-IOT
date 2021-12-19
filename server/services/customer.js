@@ -48,10 +48,12 @@ const CustomerService = {
       customerId = reqCustomer.id;
     }
 
+    // call external-api to create new user and retreive userId
     const userId = await AuthApi.createUser(
       { email, firstName, lastName, authorities },
       token
     );
+    
     if (!userId) {
       return false;
     }

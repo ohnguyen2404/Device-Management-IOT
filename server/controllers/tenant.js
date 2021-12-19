@@ -59,7 +59,7 @@ module.exports = {
   async updateTenant(req, res) {
     const tenantId = req.params.tenantId
     const options = req.body
-    const result = await TenantService.update(tenantId, options)
+    const result = await TenantService.update(tenantId, options, req.token)
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not update tenant!",

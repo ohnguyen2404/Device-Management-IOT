@@ -46,9 +46,6 @@ const TenantDAO = {
   },
 
   async createWithCreateUid(userId, createUid, options) {
-    console.log("options", options);
-    console.log("userId", userId);
-    console.log("createUid", createUid);
     try {
       await Tenant.create({
         ...options,

@@ -55,7 +55,6 @@ const CustomerDAO = {
   },
 
   async createWithCreateUid(userId, createUid, options) {
-    console.log("options", options);
     try {
       await Customer.create({
         ...options,

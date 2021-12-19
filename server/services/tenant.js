@@ -36,7 +36,7 @@ const TenantService = {
       tenantId = reqTenant.id;
     }
 
-    // userId for the new created tenant
+    // call external-api to create new user and retreive userId
     const userId = await AuthApi.createUser(
       { email, firstName, lastName, authorities },
       token
@@ -44,6 +44,7 @@ const TenantService = {
     if (!userId) {
       return false;
     }
+
     return await TenantDAO.createWithCreateUid(userId, reqUser.userId, {
       ...restOptions,
       email,
@@ -60,8 +61,26 @@ const TenantService = {
     return await TenantDAO.create(userId, options);
   },
 
-  async update(tenantId, options) {
-    return await TenantDAO.update(tenantId, options);
+  async update(tenantId, options, token) {
+    const {
+      email,
+      firstName,
+      lastName,
+      deleted = false,
+      ...restOptions
+    } = options;
+    const updatedTenant = await TenantDAO.get(tenantId);
+    await AuthApi.updateUser(
+      updatedTenant.userId,
+      {
+        email,
+        firstName,
+        lastName,
+        deleted,
+      },
+      token
+    );
+    return await TenantDAO.update(tenantId, restOptions);
   },
 
   async delete(tenantId, token) {

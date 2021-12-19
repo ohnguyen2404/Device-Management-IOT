@@ -17,6 +17,21 @@ const AuthApi = {
     }
   },
 
+  async updateUser(userId, data, token) {
+    try {
+      const response = await axiosApi.put(
+        `/user/${userId}`, 
+        data, 
+        {headers: authHeader(token)}
+      )
+      return response.userId
+    } 
+    catch (e) {
+      console.log('error external-createUser', e.message);
+      return false
+    }
+  },
+
   async deleteUser(userId, token) {
     try {
       const response = await axiosApi.delete(
