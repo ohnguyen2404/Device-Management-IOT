@@ -30,8 +30,13 @@ const CustomerService = {
     return await CustomerDAO.update(customerId, options)
   },
 
-  async delete(customerId) {
-    return await CustomerDAO.delete(customerId)
+  async delete(customerId, token) {
+    const customerUser = await CustomerDAO.get(customerId)
+    if (customerUser.userId) {
+      await AuthApi.deleteUser(customerUser.userId, token)
+      return await CustomerDAO.delete(customerId)
+    }
+    return false
   }
 }
 

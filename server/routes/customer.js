@@ -37,7 +37,7 @@ module.exports = (app) => {
       authJwt.verifyToken,
       authJwt.isAdmin
     ],
-    customerController.removeCustomer)
+    customerController.deleteCustomer)
   
   app.post(
     "/customer",

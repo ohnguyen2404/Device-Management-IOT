@@ -45,7 +45,6 @@ const TenantDAO = {
   },
 
   async create(userId, options) {
-    console.log("***")
     try {
       await Tenant.create({
         ...options,

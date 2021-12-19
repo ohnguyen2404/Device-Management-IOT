@@ -74,7 +74,7 @@ module.exports = {
     })
   },
 
-  async removeCustomer(req, res) {
+  async deleteCustomer(req, res) {
     const customerId = req.params.customerId
 
     const result = await CustomerService.delete(customerId)

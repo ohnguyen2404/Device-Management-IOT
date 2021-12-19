@@ -38,8 +38,13 @@ const TenantService = {
     return await TenantDAO.update(tenantId, options)
   },
 
-  async delete(tenantId) {
-    return await TenantDAO.delete(tenantId)
+  async delete(tenantId, token) {
+    const tenantUser = await TenantDAO.get(tenantId)
+    if (tenantUser.userId) {
+      await AuthApi.deleteUser(tenantUser.userId, token)
+      return await TenantDAO.delete(tenantId)
+    }
+    return false
   }
 }
 

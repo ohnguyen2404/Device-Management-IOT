@@ -72,10 +72,10 @@ module.exports = {
     })
   },
 
-  async removeTenant(req, res) {
+  async deleteTenant(req, res) {
     const tenantId = req.params.tenantId
 
-    const result = await TenantService.delete(tenantId)
+    const result = await TenantService.delete(tenantId, req.token)
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not delete tenant!",

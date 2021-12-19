@@ -39,7 +39,7 @@ module.exports = (app) => {
       authJwt.verifyToken,
       authJwt.isAdmin
     ],
-    tenantController.removeTenant)
+    tenantController.deleteTenant)
   
   app.post(
     "/tenant",
