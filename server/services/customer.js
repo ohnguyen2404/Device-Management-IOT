@@ -66,8 +66,32 @@ const CustomerService = {
     });
   },
 
-  async update(customerId, options) {
-    return await CustomerDAO.update(customerId, options);
+  async update(customerId, options, token) {
+    const {
+      email,
+      firstName,
+      lastName,
+      deleted = false,
+      ...restOptions
+    } = options;
+    const updatedCustomer = await CustomerDAO.get(customerId);
+
+    if (!updatedCustomer) {
+      return false
+    }
+
+    await AuthApi.updateUser(
+      updatedCustomer.userId,
+      {
+        email,
+        firstName,
+        lastName,
+        deleted
+      },
+      token
+    )
+
+    return await CustomerDAO.update(customerId, restOptions);
   },
 
   async delete(customerId, token) {

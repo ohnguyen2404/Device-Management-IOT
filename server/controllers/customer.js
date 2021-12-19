@@ -3,9 +3,8 @@ const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
   async getAllCustomers(req, res) {
-    const {tenantId} = req.body
-
-    const result = await CustomerService.getAll(tenantId, req.authorities)
+    const {userId, authorities} = req
+    const result = await CustomerService.getAll({userId, authorities})
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -60,7 +59,7 @@ module.exports = {
   async updateCustomer(req, res) {
     const customerId = req.params.customerId
     const options = req.body
-    const result = await CustomerService.update(customerId, options)
+    const result = await CustomerService.update(customerId, options, req.token)
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not update customer!",

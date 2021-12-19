@@ -70,6 +70,11 @@ const TenantService = {
       ...restOptions
     } = options;
     const updatedTenant = await TenantDAO.get(tenantId);
+
+    if (!updatedTenant) {
+      return false
+    }
+
     await AuthApi.updateUser(
       updatedTenant.userId,
       {
@@ -80,6 +85,7 @@ const TenantService = {
       },
       token
     );
+    
     return await TenantDAO.update(tenantId, restOptions);
   },
 
