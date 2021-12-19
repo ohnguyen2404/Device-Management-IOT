@@ -7,11 +7,13 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true
     },
     userId: {
-      type: Sequelize.UUID,
-      allowNull: true
+      type: Sequelize.UUID
     },
     email: {
       type: Sequelize.STRING
+    },
+    tenantId: {
+      type: Sequelize.UUID
     },
     title: {
       type: Sequelize.STRING

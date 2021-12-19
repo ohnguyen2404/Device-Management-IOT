@@ -55,7 +55,6 @@ const TenantDAO = {
         userId,
         createUid,
       });
-
       return true;
     } catch (e) {
       console.log("error", e.message);
