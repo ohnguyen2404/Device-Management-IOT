@@ -3,7 +3,8 @@ const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
   async getAllTenants(req, res) {
-    const result = await TenantService.getAll()
+    const {userId, authorities} = req
+    const result = await TenantService.getAll({userId, authorities})
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -37,7 +38,8 @@ module.exports = {
 
   async createTenant(req, res) {
     const options = req.body
-    const result = await TenantService.create(req.userId, options, req.token)
+    const {userId, authorities} = req
+    const result = await TenantService.create({userId, authorities}, options, req.token)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

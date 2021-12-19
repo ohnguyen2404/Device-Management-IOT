@@ -1,87 +1,96 @@
-const {Customer} = require('../models')
-const { Op } = require("sequelize");
+const { Customer } = require("../models");
 
 const CustomerDAO = {
-  async getAll(tenantId) {
-    const customerQuery = {
-      where: {
-        [Op.and]: [
-          {tenantId},
-          {deleted: false}
-        ]
-      }
-    }
-    console.log('customerQuery', customerQuery);
-    const customers = await Customer.findAll({customerQuery})
+  async getAll() {
+    return await Customer.findAll({
+      where: {deleted: false}
+    });
+  },
 
-    return customers
+  async getAllByTenantId(tenantId) {
+    return await Customer.findAll({
+      where: {
+        tenantId,
+        deleted: false,
+      },
+    });
+  },
+
+  async getAllByCustomerId(customerId) {
+    return await Customer.findAll({
+      where: {
+        customerId,
+        deleted: false,
+      },
+    });
   },
 
   async existsByEmail(email) {
     const query = {
       where: {
-        email
-      }
-    }
-    return await Customer.findOne(query) !== null
+        email,
+      },
+    };
+    return (await Customer.findOne(query)) !== null;
   },
 
   async get(customerId) {
     try {
-      return await Customer.findByPk(customerId)
+      return await Customer.findByPk(customerId);
+    } catch (e) {
+      console.log("error", e.message);
+      return false;
     }
-    catch (e) {
-      console.log('error', e.message);
-      return false
+  },
+
+  async getByUserId(userId) {
+    try {
+      return await Customer.findOne({
+        where: { userId },
+      });
+    } catch (e) {
+      console.log("error", e.message);
+      return false;
     }
   },
 
   async createWithCreateUid(userId, createUid, options) {
-    console.log('options', options);
+    console.log("options", options);
     try {
       await Customer.create({
         ...options,
         userId,
-        createUid
-      })
-      return true
-    }
-    catch(e) {
-      console.log('error', e.message);
-      return false
+        createUid,
+      });
+      return true;
+    } catch (e) {
+      console.log("error", e.message);
+      return false;
     }
   },
 
   async update(customerId, options) {
-    console.log('options', options);
+    console.log("options", options);
     try {
-      await Customer.update(
-        {...options},
-        {where: {id: customerId}}
-      )
+      await Customer.update({ ...options }, { where: { id: customerId } });
 
-      return true
-    }
-    catch (e) {
-      console.log('error', e.message);
-      return false
+      return true;
+    } catch (e) {
+      console.log("error", e.message);
+      return false;
     }
   },
 
   async delete(customerId) {
     try {
-      await Customer.update(
-        {deleted: true},
-        {where: {id: customerId}}
-      )
-      
-      return true
-    }
-    catch (e) {
-      console.log('error', e.message);
-      return false
-    }
-  }
-}
+      await Customer.update({ deleted: true }, { where: { id: customerId } });
 
-module.exports = CustomerDAO
+      return true;
+    } catch (e) {
+      console.log("error", e.message);
+      return false;
+    }
+  },
+};
+
+module.exports = CustomerDAO;

@@ -5,7 +5,7 @@ module.exports = {
   async getAllCustomers(req, res) {
     const {tenantId} = req.body
 
-    const result = await CustomerService.getAll(tenantId)
+    const result = await CustomerService.getAll(tenantId, req.authorities)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -39,7 +39,8 @@ module.exports = {
 
   async createCustomer(req, res) {
     const options = req.body
-    const result = await CustomerService.create(req.userId, options, req.token)
+    const {userId, authorities} = req
+    const result = await CustomerService.create({userId, authorities}, options, req.token)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
