@@ -1,42 +1,26 @@
 const {v4: uuidv4} = require('uuid')
 
 module.exports = (sequelize, Sequelize) => {
-  const User = sequelize.define('user', {
+  const DeviceCredentials = sequelize.define('device_credentials', {
     id: {
       type: Sequelize.UUID,
       primaryKey: true
     },
-    tenantId: {
+    deviceId: {
       type: Sequelize.UUID,
       references: {
-        model: 'tenant',
+        model: 'device',
         key: 'id'
       }
     },
-    customerId: {
-      type: Sequelize.UUID,
-      references: {
-        model: 'customer',
-        key: 'id'
-      }
-    },
-    email: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      unique: true
-    },
-    password: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    first_name: {
+    credentialsType: {
       type: Sequelize.STRING
     },
-    last_name: {
+    credentialsId: {
       type: Sequelize.STRING
     },
-    authority: {
-      type: Sequelize.STRING(10)
+    credentialsValue: {
+      type: Sequelize.STRING
     },
     deleted: {
       type: Sequelize.BOOLEAN,
@@ -48,13 +32,11 @@ module.exports = (sequelize, Sequelize) => {
     updateUid: {
       type: Sequelize.UUID
     }
-
   }, {
     underscored: true,
     freezeTableName: true
   });
 
-  User.beforeCreate(user => user.id = uuidv4())
-
-  return User;
+  DeviceCredentials.beforeCreate(deviceCredentials => deviceCredentials.id = uuidv4())
+  return DeviceCredentials;
 };

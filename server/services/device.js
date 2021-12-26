@@ -1,6 +1,6 @@
 const DeviceDAO = require('../dao/device')
 
-const DeviceService = {
+const EntityService = {
   async getAll(tenantId, customerId) {
     return await DeviceDAO.getAll(tenantId, customerId)
   },
@@ -22,4 +22,4 @@ const DeviceService = {
   }
 }
 
-module.exports = DeviceService
+module.exports = EntityService

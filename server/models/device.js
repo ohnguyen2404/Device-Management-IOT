@@ -20,7 +20,7 @@ module.exports = (sequelize, Sequelize) => {
         key: 'id'
       }
     },
-    device_data: {
+    deviceData: {
       type: Sequelize.JSON
     },
     type: {
@@ -32,10 +32,10 @@ module.exports = (sequelize, Sequelize) => {
     label: {
       type: Sequelize.STRING
     },
-    firmware_id: {
+    firmwareId: {
       type: Sequelize.UUID
     },
-    software_id: {
+    softwareId: {
       type: Sequelize.UUID
     },
     deleted: {

@@ -22,29 +22,9 @@ checkDuplicateEmail = async (req, res, next) => {
   next()
 }
 
-checkRolesExisted = async (req, res, next) => {
-  const {roles} = req.body
-  let isValidRole = true
-  if (roles) {
-    roles.forEach((role) => {
-      if (!Role.defaultRoles.includes(role)) {
-        res.status(StatusCodes.BAD_REQUEST).send({
-          message: "Register fail! Invalid roles.",
-          status: getReasonPhrase(StatusCodes.BAD_REQUEST),
-          statusValue: StatusCodes.BAD_REQUEST,
-          timestamp: new Date().toISOString()        
-        })
-        isValidRole = false
-      }
-    })
-  }
-  
-  isValidRole && next()
-}
 
 const verifySignUp = {
-  checkDuplicateEmail: checkDuplicateEmail,
-  checkRolesExisted: checkRolesExisted
+  checkDuplicateEmail: checkDuplicateEmail
 }
 
 module.exports = verifySignUp;
