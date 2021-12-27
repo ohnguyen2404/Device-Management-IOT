@@ -20,10 +20,10 @@ else {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.Customer = require('../models/customer')(sequelize, Sequelize);
-db.Tenant = require('../models/tenant')(sequelize, Sequelize);
-db.Device = require('../models/device')(sequelize, Sequelize);
-db.DeviceCredentials = require('../models/device_credentials')(sequelize, Sequelize);
+db.Customer = require('./customer')(sequelize, Sequelize);
+db.Tenant = require('./tenant')(sequelize, Sequelize);
+db.Device = require('./device')(sequelize, Sequelize);
+db.DeviceCredentials = require('./deviceCredentials')(sequelize, Sequelize);
 
 
 db.Tenant.hasMany(db.Device, {foreignKey: 'tenantId'})

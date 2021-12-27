@@ -1,4 +1,5 @@
-const deviceController = require('../controllers').device
+const deviceController = require('../controllers/device')
+const deviceCredentialsController = require('../controllers/deviceCredentials')
 const {validator, authJwt} = require('../middleware')
 const constants = require('../helpers/constant')
 
@@ -27,7 +28,7 @@ module.exports = (app) => {
     "/devices/:deviceId",
     [
       authJwt.verifyToken,
-      authJwt.isTenantOrAdmin
+      authJwt.isTenantOrAdmin,
     ],
     deviceController.updateDevice)
   app.delete(
@@ -42,7 +43,23 @@ module.exports = (app) => {
     "/device",
     [
       authJwt.verifyToken,
-      authJwt.isTenantOrAdmin
+      authJwt.isTenantOrAdmin,
+      validator.validateCreateDeviceInfo
     ],
     deviceController.createDevice)
+
+  app.put(
+    "/devices/credentials/:deviceId",
+    [
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin,
+    ],
+    deviceCredentialsController.updateCredentials
+  )
+
+  //Public API for validate device credentials by token
+  app.get(
+    "/device/validate/:deviceToken",
+    deviceCredentialsController.validateToken
+  )
 }

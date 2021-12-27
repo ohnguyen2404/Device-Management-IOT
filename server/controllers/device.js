@@ -22,7 +22,7 @@ module.exports = {
 
   async getDevice(req, res) {
     const deviceId = req.params.deviceId
-    const result = await DeviceService.get(deviceId)
+    const result = await DeviceService.getById(deviceId)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -39,7 +39,6 @@ module.exports = {
 
   async createDevice(req, res) {
     const options = req.body
-    console.log('options', options);
     const {userId, authorities} = req
     const result = await DeviceService.create({userId, authorities}, options)
 
@@ -54,14 +53,16 @@ module.exports = {
     }
 
     res.status(StatusCodes.OK).send({
-      message: "Create device successful!"
+      message: "Create device successfully!"
     })
   },
 
   async updateDevice(req, res) {
     const deviceId = req.params.deviceId
+    const {userId} = req
     const options = req.body
-    const result = await DeviceService.update(deviceId, options)
+
+    const result = await DeviceService.update(deviceId, userId, options)
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not update device!",
@@ -72,7 +73,7 @@ module.exports = {
       return
     }
     res.status(StatusCodes.OK).send({
-      message: "Update device successful!"
+      message: "Update device successfully!"
     })
   },
 

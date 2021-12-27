@@ -7,7 +7,7 @@ const DeviceService = {
     return await DeviceDAO.getAll(tenantId, customerId);
   },
 
-  async get(deviceId) {
+  async getById(deviceId) {
     return await DeviceDAO.get(deviceId);
   },
 
@@ -16,19 +16,22 @@ const DeviceService = {
 
     // tenantId of the reqUser
     let tenantId = null;
-    const reqUserId = reqUser.userId
+    const reqUserId = reqUser.userId;
     if (reqUser.authorities.includes("TENANT")) {
       const reqTenant = await TenantDAO.getByUserId(reqUserId);
       tenantId = reqTenant.id;
     }
 
-    const createDevice = await DeviceDAO.create({reqUserId, tenantId}, deviceOptions);
+    const createDevice = await DeviceDAO.create(
+      { reqUserId, tenantId },
+      deviceOptions
+    );
 
     const deviceCredentialsInfo = {
       deviceId: createDevice.id,
       credentialsType,
       credentialsValue,
-      createUid: reqUserId
+      createUid: reqUserId,
     };
 
     return await DeviceCredentialsService.create(deviceCredentialsInfo);
@@ -40,7 +43,7 @@ const DeviceService = {
 
   async delete(deviceId) {
     return await DeviceDAO.delete(deviceId);
-  }
+  },
 };
 
 module.exports = DeviceService;

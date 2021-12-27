@@ -1,10 +1,10 @@
 const DeviceCredentialsDAO = require("../dao/deviceCredentials");
 const constant = require("../helpers/constant");
-const crypto = require('crypto')
+const crypto = require("crypto");
 
 const DeviceCredentialsService = {
-  async get(deviceId) {
-    return await DeviceDAO.get(deviceId);
+  async validateToken(deviceToken) {
+    return await DeviceCredentialsDAO.getByCredentialsId(deviceToken);
   },
 
   async create(options) {
@@ -12,17 +12,25 @@ const DeviceCredentialsService = {
     let rawCredentialsValue = {};
     let credentialsId;
     if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN) {
-      rawCredentialsValue = {
-        accessToken: credentialsValue,
-      };
-      credentialsId = credentialsValue
+      if (!credentialsValue) {
+        const randomAccessToken = crypto.randomBytes(10).toString("hex"); // generate 20 random chars
+        rawCredentialsValue = {
+          accessToken: randomAccessToken,
+        };
+        credentialsId = randomAccessToken;
+      } else {
+        rawCredentialsValue = {
+          accessToken: credentialsValue.accessToken,
+        };
+        credentialsId = credentialsValue.accessToken;
+      }
     }
 
     if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_X_509) {
       rawCredentialsValue = {
-        RSAPublicKey: credentialsValue,
+        RSAPublicKey: credentialsValue.RSAPublicKey,
       };
-      credentialsId = crypto.randomBytes(10).toString('hex') // generate 20 random chars
+      credentialsId = crypto.randomBytes(10).toString("hex"); // generate 20 random chars
     }
 
     if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC) {
@@ -31,7 +39,7 @@ const DeviceCredentialsService = {
         username: credentialsValue.username,
         password: credentialsValue.password,
       };
-      credentialsId = crypto.randomBytes(10).toString('hex') // generate 20 random chars
+      credentialsId = crypto.randomBytes(10).toString("hex"); // generate 20 random chars
     }
     console.log("rawCredentialsValue", credentialsId);
 
@@ -40,14 +48,13 @@ const DeviceCredentialsService = {
       credentialsType,
       credentialsId,
       credentialsValue: JSON.stringify(rawCredentialsValue),
-      createUid
+      createUid,
     });
   },
 
   async update(deviceId, options) {
     return await DeviceCredentialsDAO.update(deviceId, options);
   },
-
 };
 
 module.exports = DeviceCredentialsService;

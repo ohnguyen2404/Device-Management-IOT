@@ -27,7 +27,8 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING
     },
     name: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      unique: true
     },
     label: {
       type: Sequelize.STRING

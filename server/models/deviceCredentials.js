@@ -11,7 +11,8 @@ module.exports = (sequelize, Sequelize) => {
       references: {
         model: 'device',
         key: 'id'
-      }
+      },
+      unique: true
     },
     credentialsType: {
       type: Sequelize.STRING
@@ -21,7 +22,8 @@ module.exports = (sequelize, Sequelize) => {
       unique: true
     },
     credentialsValue: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      unique: true
     },
     deleted: {
       type: Sequelize.BOOLEAN,

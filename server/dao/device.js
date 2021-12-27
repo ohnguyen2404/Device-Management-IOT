@@ -30,6 +30,17 @@ const DeviceDAO = {
     }
   },
 
+  async getByName(name) {
+    try {
+      return await Device.findOne({
+        where: {name}
+      })
+    } catch (e) {
+      console.log('error', e.message);
+      return false
+    }
+  },
+
   async create(user, options) {
 
     console.log('options', options);
