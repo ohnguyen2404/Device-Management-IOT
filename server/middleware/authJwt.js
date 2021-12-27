@@ -15,7 +15,6 @@ checkRoleExist = (userRoles, checkRole) => {
 
 verifyToken = (req, res, next) => {
   let token = req.headers[constants.TOKEN_HEADER.toLowerCase()]
-
   if (!token) {
     return res.status(StatusCodes.FORBIDDEN).send({
       message: "No token provided!"

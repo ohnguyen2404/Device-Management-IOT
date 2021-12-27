@@ -1,11 +1,11 @@
-const EntityService = require('../services/device')
+const DeviceService = require('../services/device')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
   async getAllDevices(req, res) {
     const {tenantId, customerId} = req.body
 
-    const result = await EntityService.getAll(tenantId, customerId)
+    const result = await DeviceService.getAll(tenantId, customerId)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -22,7 +22,7 @@ module.exports = {
 
   async getDevice(req, res) {
     const deviceId = req.params.deviceId
-    const result = await EntityService.get(deviceId)
+    const result = await DeviceService.get(deviceId)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -38,8 +38,10 @@ module.exports = {
   },
 
   async createDevice(req, res) {
-    const {tenantId, ...options} = req.body
-    const result = await EntityService.create(tenantId, options)
+    const options = req.body
+    console.log('options', options);
+    const {userId, authorities} = req
+    const result = await DeviceService.create({userId, authorities}, options)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -59,7 +61,7 @@ module.exports = {
   async updateDevice(req, res) {
     const deviceId = req.params.deviceId
     const options = req.body
-    const result = await EntityService.update(deviceId, options)
+    const result = await DeviceService.update(deviceId, options)
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not update device!",
@@ -77,7 +79,7 @@ module.exports = {
   async removeDevice(req, res) {
     const deviceId = req.params.deviceId
 
-    const result = await EntityService.delete(deviceId)
+    const result = await DeviceService.delete(deviceId)
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not delete device!",

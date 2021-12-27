@@ -30,17 +30,16 @@ const DeviceDAO = {
     }
   },
 
-  async create(tenantId, options) {
+  async create(user, options) {
 
     console.log('options', options);
 
     try {
-      await Device.create({
+      return await Device.create({
         ...options,
-        tenantId
+        tenantId: user.tenantId,
+        createUid: user.reqUserId
       })
-
-      return true
     }
     catch(e) {
       console.log('error', e.message);
