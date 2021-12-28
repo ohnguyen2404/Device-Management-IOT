@@ -22,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
       unique: true
     },
     credentialsValue: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(1000),
       unique: true
     },
     deleted: {
