@@ -1,12 +1,15 @@
 const DeviceCredentialsDAO = require("../dao/deviceCredentials");
+const DeviceDAO = require("../dao/device");
 const constant = require("../helpers/constant");
 const crypto = require("crypto");
 
 const DeviceCredentialsService = {
   async validateToken(token, type) {
+    let credentials = null;
     switch (type) {
       case constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN:
-        return await DeviceCredentialsDAO.getByCredentialsId(token);
+        credentials = await DeviceCredentialsDAO.getByCredentialsId(token);
+        break;
 
       case constant.DEVICE_CREDENTIALS_TYPE_X_509:
         const x509Token = token
@@ -14,12 +17,15 @@ const DeviceCredentialsService = {
           .replace("-----END PUBLIC KEY-----", "")
           .replace(/\n/g, "")
           .trim();
+
         const x509HashToken = crypto
           .createHash("sha256")
           .update(x509Token)
           .digest("hex");
-  
-        return await DeviceCredentialsDAO.getByCredentialsId(x509HashToken);
+        credentials = await DeviceCredentialsDAO.getByCredentialsId(
+          x509HashToken
+        );
+        break;
 
       case constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC:
         const mqttBasicToken = JSON.stringify(token);
@@ -27,9 +33,18 @@ const DeviceCredentialsService = {
           .createHash("sha256")
           .update(mqttBasicToken)
           .digest("hex");
-          
-        return await DeviceCredentialsDAO.getByCredentialsId(mqttBasicHashToken);
+
+        credentials = await DeviceCredentialsDAO.getByCredentialsId(
+          mqttBasicHashToken
+        );
+        break;
+
+      default:
+        break;
     }
+    
+    if (!credentials) return false;
+    return await DeviceDAO.get(credentials.deviceId);
   },
 
   async create(options) {

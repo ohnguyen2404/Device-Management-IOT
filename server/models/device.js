@@ -51,7 +51,10 @@ module.exports = (sequelize, Sequelize) => {
     }
   }, {
     underscored: true,
-    freezeTableName: true
+    freezeTableName: true,
+    defaultScope: {
+      attributes: {exclude: ['deleted', 'createUid', 'updateUid', 'createdAt', 'updatedAt']}
+    }
   });
 
   Device.beforeCreate(device => device.id = uuidv4())

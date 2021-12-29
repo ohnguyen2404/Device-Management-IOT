@@ -45,7 +45,10 @@ module.exports = (sequelize, Sequelize) => {
     }
   }, {
     underscored: true,
-    freezeTableName: true
+    freezeTableName: true,
+    defaultScope: {
+      attributes: {exclude: ['deleted', 'createUid', 'updateUid', 'createdAt', 'updatedAt']}
+    }
   });
 
   Tenant.beforeCreate(tenant => tenant.id = uuidv4())

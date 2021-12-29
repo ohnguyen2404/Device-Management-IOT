@@ -50,6 +50,20 @@ validateField = (field) => {
   };
 };
 
+validCredentialsTypes = (credentialsType) => {
+  const validTypes = [
+    constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN,
+    constant.DEVICE_CREDENTIALS_TYPE_X_509,
+    constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC,
+  ];
+
+  if (!validTypes.includes(credentialsType)) {
+    return false;
+  }
+
+  return true;
+};
+
 validateAuthorities = async (req, res, next) => {
   const authorities = req.body.authorities;
 
@@ -73,20 +87,6 @@ validateAuthorities = async (req, res, next) => {
   next();
 };
 
-validateCredentialsTypes = (credentialsType) => {
-  const validTypes = [
-    constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN,
-    constant.DEVICE_CREDENTIALS_TYPE_X_509,
-    constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC,
-  ];
-
-  if (!validTypes.includes(credentialsType)) {
-    return false;
-  }
-
-  return true;
-};
-
 validateCreateDeviceInfo = async (req, res, next) => {
   const { name, credentialsType, credentialsValue } = req.body;
   if (!credentialsType) {
@@ -96,7 +96,7 @@ validateCreateDeviceInfo = async (req, res, next) => {
     return;
   }
 
-  if (!validateCredentialsTypes(credentialsType)) {
+  if (!validCredentialsTypes(credentialsType)) {
     res
       .status(StatusCodes.BAD_REQUEST)
       .send({ message: `Credentials type: ${credentialsType} is invalid` });
@@ -135,10 +135,26 @@ validateCreateDeviceInfo = async (req, res, next) => {
   next();
 };
 
+validateCredentials = (req, res, next) => {
+  const { token, type } = req.body;
+  if (!token) {
+    res.status(StatusCodes.BAD_REQUEST).send({ message: "Empty token!" });
+    return;
+  }
+
+  if (!validCredentialsTypes(type)) {
+    res.status(StatusCodes.BAD_REQUEST).send({ message: `Credentials type: ${type} is invalid` });
+    return;
+  }
+
+  next();
+};
+
 const validator = {
   validateField: validateField,
   validateAuthorities: validateAuthorities,
   validateCreateDeviceInfo: validateCreateDeviceInfo,
+  validateCredentials: validateCredentials,
 };
 
 module.exports = validator;

@@ -59,17 +59,11 @@ module.exports = (app) => {
 
   //Public API-s for validate device credentials by token value
   app.post(
-    "/device/validate-access-token",
-    deviceCredentialsController.validateAccessToken
+    "/device/validate",
+    [
+      validator.validateCredentials
+    ],
+    deviceCredentialsController.validateToken
   )
 
-  app.post(
-    "/device/validate-x-509",
-    deviceCredentialsController.validateX509Token
-  )
-
-  app.post(
-    "/device/validate-mqtt-basic",
-    deviceCredentialsController.validateMqttBasicToken
-  )
 }

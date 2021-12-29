@@ -52,7 +52,10 @@ module.exports = (sequelize, Sequelize) => {
     }
   }, {
     underscored: true,
-    freezeTableName: true
+    freezeTableName: true,
+    defaultScope: {
+      attributes: {exclude: ['deleted', 'createUid', 'updateUid', 'createdAt', 'updatedAt']}
+    }
   });
 
   Customer.beforeCreate(customer => customer.id = uuidv4())
