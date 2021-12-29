@@ -9,7 +9,7 @@ module.exports = {
     const result = await DeviceCredentialsService.validateToken(token, type)
 
     if (!result) {
-      res.status(StatusCodes.OK).send({device: {}})
+      res.status(StatusCodes.OK).send({device: null})
       return
     }
 
