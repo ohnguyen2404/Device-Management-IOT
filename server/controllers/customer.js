@@ -2,9 +2,9 @@ const CustomerService = require('../services/customer')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
-  async getAllCustomers(req, res) {
-    const {userId, authorities} = req
-    const result = await CustomerService.getAll({userId, authorities})
+  async getCustomers(req, res) {
+    const {authorities, tenantId, customerId} = req
+    const result = await CustomerService.getAll({authorities, tenantId, customerId})
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -38,8 +38,8 @@ module.exports = {
 
   async createCustomer(req, res) {
     const options = req.body
-    const {userId, authorities} = req
-    const result = await CustomerService.create({userId, authorities}, options, req.token)
+    const {tenantId, customerId, authorities} = req
+    const result = await CustomerService.create({tenantId, customerId, authorities}, options, req.token)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

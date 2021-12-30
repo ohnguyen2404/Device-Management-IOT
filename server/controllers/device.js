@@ -2,8 +2,8 @@ const DeviceService = require('../services/device')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
-  async getAllDevices(req, res) {
-    const {tenantId, customerId} = req.body
+  async getDevices(req, res) {
+    const {tenantId, customerId} = req
 
     const result = await DeviceService.getAll(tenantId, customerId)
 
@@ -39,8 +39,8 @@ module.exports = {
 
   async createDevice(req, res) {
     const options = req.body
-    const {userId, authorities} = req
-    const result = await DeviceService.create({userId, authorities}, options)
+    const {userId, tenantId, authorities} = req
+    const result = await DeviceService.create({userId, tenantId, authorities}, options)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

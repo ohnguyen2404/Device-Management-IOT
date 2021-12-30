@@ -17,7 +17,7 @@ module.exports = (app) => {
     [
       authJwt.verifyToken
     ],
-    deviceController.getAllDevices)
+    deviceController.getDevices)
   app.get(
     "/devices/:deviceId",
     [

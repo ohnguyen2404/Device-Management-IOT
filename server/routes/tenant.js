@@ -17,7 +17,7 @@ module.exports = (app) => {
       authJwt.verifyToken,
       authJwt.isTenantOrAdmin
     ],
-    tenantController.getAllTenants)
+    tenantController.getTenants)
   app.get(
     "/tenants/:tenantId",
     [

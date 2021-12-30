@@ -54,7 +54,7 @@ const DeviceCredentialsService = {
     if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN) {
       // Default case: user don't provide any credentials
       // Note: credentials type ACCESS_TOKEN will have it's credentials_value = null
-      if (!credentialsValue) {
+      if (!credentialsValue || !credentialsValue.accessToken) {
         const randomAccessToken = crypto.randomBytes(10).toString("hex"); // generate 20 random chars
         credentialsId = randomAccessToken;
       } else {

@@ -1,22 +1,28 @@
 const TenantDAO = require("../dao/tenant");
 const CustomerDAO = require("../dao/customer");
 const AuthApi = require("../external-api/auth");
+const constant = require("../helpers/constant")
 
 const TenantService = {
   async getAll(user) {
-    const { authorities, userId } = user;
-    if (authorities.includes("ADMIN")) return await TenantDAO.getAll();
+    const { authorities, tenantId } = user;
+    if (authorities.includes(constant.ROLE_ADMIN)) return await TenantDAO.getAll();
 
-    if (authorities.includes("TENANT")) {
-      const userTenant = await TenantDAO.getByUserId(userId);
-      return await TenantDAO.getAllByTenantId(userTenant.id);
+    if (authorities.includes(constant.ROLE_TENANT)) {
+      return await TenantDAO.getAllByTenantId(tenantId);
     }
 
     return false;
   },
 
-  async get(tenantId) {
-    return await TenantDAO.get(tenantId);
+  async get(tenantId, token) {
+    const tenant = await TenantDAO.get(tenantId);
+    const user = await AuthApi.getUser(tenant.userId, token)
+
+    return {
+      ...tenant,
+      ...user
+    }
   },
 
   async create(reqUser, options, token) {
@@ -29,12 +35,6 @@ const TenantService = {
       return false;
     }
 
-    // tenantId of the reqUser
-    let tenantId = null;
-    if (reqUser.authorities.includes("TENANT")) {
-      const reqTenant = await TenantDAO.getByUserId(reqUser.userId);
-      tenantId = reqTenant.id;
-    }
 
     // call external-api to create new user and retreive userId
     const userId = await AuthApi.createUser(
@@ -44,6 +44,8 @@ const TenantService = {
     if (!userId) {
       return false;
     }
+
+    const tenantId = reqUser.tenantId
 
     return await TenantDAO.createWithCreateUid(userId, reqUser.userId, {
       ...restOptions,

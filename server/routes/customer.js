@@ -17,7 +17,7 @@ module.exports = (app) => {
       authJwt.verifyToken,
       authJwt.isTenantOrAdmin
     ],
-    customerController.getAllCustomers)
+    customerController.getCustomers)
   app.get(
     "/customers/:customerId",
     [

@@ -1,9 +1,14 @@
 const jwtService = require('../services/jwt')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
-const constants = require('../helpers/constant')
+const constant = require('../helpers/constant')
+const CustomerDAO = require('../dao/customer')
+const TenantDAO = require('../dao/tenant')
 
 checkRoleExist = (userRoles, checkRole) => {
   let isCheck = false
+  if (!userRoles) {
+    return false
+  }
   userRoles.forEach(role => {
     if (role === checkRole) {
       isCheck = true
@@ -13,16 +18,16 @@ checkRoleExist = (userRoles, checkRole) => {
   return isCheck
 }
 
-verifyToken = (req, res, next) => {
-  let token = req.headers[constants.TOKEN_HEADER.toLowerCase()]
+verifyToken = async (req, res, next) => {
+  let token = req.headers[constant.TOKEN_HEADER.toLowerCase()]
   if (!token) {
     return res.status(StatusCodes.FORBIDDEN).send({
       message: "No token provided!"
     })
   }
 
-  if (token.startsWith(constants.TOKEN_START)){
-    token = token.substring(constants.TOKEN_START.length, token.length);
+  if (token.startsWith(constant.TOKEN_START)){
+    token = token.substring(constant.TOKEN_START.length, token.length);
   } 
   else {
     return res.status(StatusCodes.FORBIDDEN).send({
@@ -45,15 +50,36 @@ verifyToken = (req, res, next) => {
     })
   }
 
+  // We will get tenantId and/or customerId of the user here for further processing
+  let tenantId = null
+  let customerId = null
+  let isAdmin = false
+  if (checkRoleExist(authorities, constant.ROLE_ADMIN)) {
+    isAdmin = true
+  }
+
+  if (checkRoleExist(authorities, constant.ROLE_TENANT)) {
+    const userTenant = await TenantDAO.getByUserId(sub)
+    tenantId = userTenant.id
+  }
+
+  if (checkRoleExist(authorities, constant.ROLE_CUSTOMER)) {
+    const userCustomer = await CustomerDAO.getByUserId(sub)
+    customerId = userCustomer.id
+  }
+
+  req.isAdmin = isAdmin
+  req.tenantId = tenantId
+  req.customerId = customerId
   req.userId = sub
   req.authorities = authorities
   req.token = token
-  console.log('authorities', authorities);
+
   next()
 }
 
 isAdmin = async (req, res, next) => {
-  let isValid = checkRoleExist(req.authorities, "ADMIN")
+  let isValid = checkRoleExist(req.authorities, constant.ROLE_ADMIN)
   isValid
     ? next()
     : res.status(StatusCodes.FORBIDDEN).send({message: "Require Admin role!"}) 
@@ -61,8 +87,8 @@ isAdmin = async (req, res, next) => {
 
 isTenantOrAdmin = async (req, res, next) => {
   let isValid = 
-    checkRoleExist(req.authorities, "ADMIN") ||
-    checkRoleExist(req.authorities, "TENANT")
+    checkRoleExist(req.authorities, constant.ROLE_ADMIN) ||
+    checkRoleExist(req.authorities, constant.ROLE_TENANT)
 
   isValid
     ? next()
@@ -70,7 +96,7 @@ isTenantOrAdmin = async (req, res, next) => {
 }
 
 isCustomer = async (req, res, next) => {
-  let isValid = checkRoleExist(req.authorities, "CUSTOMER")
+  let isValid = checkRoleExist(req.authorities, constant.ROLE_CUSTOMER)
 
   isValid
     ? next()

@@ -47,6 +47,7 @@ const CustomerDAO = {
     try {
       return await Customer.findOne({
         where: { userId },
+        raw: true
       });
     } catch (e) {
       console.log("error", e.message);

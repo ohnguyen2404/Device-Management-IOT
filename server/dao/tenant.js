@@ -27,7 +27,7 @@ const TenantDAO = {
 
   async get(tenantId) {
     try {
-      return await Tenant.findByPk(tenantId);
+      return await Tenant.findByPk(tenantId, {raw: true});
     } catch (e) {
       console.log("error", e.message);
       return false;
@@ -38,6 +38,7 @@ const TenantDAO = {
     try {
       return await Tenant.findOne({
         where: { userId },
+        raw: true
       });
     } catch (e) {
       console.log("error", e.message);

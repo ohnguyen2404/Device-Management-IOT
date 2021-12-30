@@ -1,27 +1,36 @@
 const CustomerDAO = require("../dao/customer");
 const TenantDAO = require("../dao/tenant");
 const AuthApi = require("../external-api/auth");
+const constant = require("../helpers/constant");
 
 const CustomerService = {
   async getAll(user) {
-    const { authorities, userId } = user;
-    if (authorities.includes("ADMIN")) return await CustomerDAO.getAll();
+    const { authorities, tenantId, customerId } = user;
+    if (authorities.includes(constant.ROLE_ADMIN))
+      return await CustomerDAO.getAll();
 
-    if (authorities.includes("TENANT")) {
-      const userTenant = await TenantDAO.getByUserId(userId);
-      return await CustomerDAO.getAllByTenantId(userTenant.id);
+    let customerList = [];
+
+    if (authorities.includes(constant.ROLE_TENANT)) {
+      const customers = await CustomerDAO.getAllByTenantId(tenantId);
+      customerList = [...customerList, ...customers];
     }
 
-    if (authorities.includes("CUSTOMER")) {
-      const userCustomer = await CustomerDAO.getByUserId(userId);
-      return await CustomerDAO.getAllByCustomerId(userCustomer.id);
+    if (authorities.includes(constant.ROLE_CUSTOMER)) {
+      const customers = await CustomerDAO.getAllByCustomerId(customerId);
+      customerList = [...customerList, ...customers];
     }
-
-    return false;
+    return customerList;
   },
 
-  async get(customerId) {
-    return await CustomerDAO.get(customerId);
+  async get(customerId, token) {
+    const customer = await CustomerDAO.get(customerId);
+    const user = await AuthApi.getUser(customer.userId, token);
+
+    return {
+      ...customer,
+      ...user,
+    };
   },
 
   async create(reqUser, options, token) {
@@ -35,25 +44,17 @@ const CustomerService = {
     }
 
     // tenantId of the reqUser
-    let tenantId = null;
-    if (reqUser.authorities.includes("TENANT")) {
-      const reqTenant = await TenantDAO.getByUserId(reqUser.userId);
-      tenantId = reqTenant.id;
-    }
+    const tenantId = reqUser.tenantId;
 
     // customerId of the reqUser
-    let customerId = null;
-    if (reqUser.authorities.includes("CUSTOMER")) {
-      const reqCustomer = await CustomerDAO.getByUserId(reqUser.userId);
-      customerId = reqCustomer.id;
-    }
+    const customerId = reqUser.customerId;
 
     // call external-api to create new user and retreive userId
     const userId = await AuthApi.createUser(
       { email, firstName, lastName, authorities },
       token
     );
-    
+
     if (!userId) {
       return false;
     }
@@ -77,7 +78,7 @@ const CustomerService = {
     const updatedCustomer = await CustomerDAO.get(customerId);
 
     if (!updatedCustomer) {
-      return false
+      return false;
     }
 
     await AuthApi.updateUser(
@@ -86,10 +87,10 @@ const CustomerService = {
         email,
         firstName,
         lastName,
-        deleted
+        deleted,
       },
       token
-    )
+    );
 
     return await CustomerDAO.update(customerId, restOptions);
   },

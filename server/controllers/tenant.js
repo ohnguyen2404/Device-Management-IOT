@@ -2,10 +2,10 @@ const TenantService = require('../services/tenant')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
-  async getAllTenants(req, res) {
-    const {userId, authorities} = req
-    const result = await TenantService.getAll({userId, authorities})
-
+  async getTenants(req, res) {
+    const {authorities, tenantId} = req
+    const result = await TenantService.getAll({authorities, tenantId})
+    console.log('res', result);
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not get tenants!",
@@ -20,8 +20,9 @@ module.exports = {
   },
 
   async getTenant(req, res) {
+    const {token} = req
     const tenantId = req.params.tenantId
-    const result = await TenantService.get(tenantId)
+    const result = await TenantService.get(tenantId, token)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -38,8 +39,8 @@ module.exports = {
 
   async createTenant(req, res) {
     const options = req.body
-    const {userId, authorities} = req
-    const result = await TenantService.create({userId, authorities}, options, req.token)
+    const {tenantId, authorities} = req
+    const result = await TenantService.create({tenantId, authorities}, options, req.token)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

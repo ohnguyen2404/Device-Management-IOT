@@ -2,6 +2,21 @@ const axiosApi = require("../helpers/axiosApi");
 const authHeader = require("../helpers/authHeader")
 
 const AuthApi = {
+
+  async getUser(userId, token) {
+    try {
+      const response = await axiosApi.get(
+        `/user/${userId}`,
+        {headers: authHeader(token)}
+      )
+      return response
+    }
+    catch (e) {
+      console.log('error external-getUser', e.message);
+      return false
+    }
+  },
+
   async createUser(data, token) {
     try {
       const response = await axiosApi.post(
