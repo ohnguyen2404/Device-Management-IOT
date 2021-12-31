@@ -16,13 +16,33 @@ module.exports = {
     res.status(StatusCodes.OK).send({device: result})
   },
 
+  async getCredentials(req, res) {
+    const deviceId = req.params.deviceId
+    const result = await DeviceCredentialsService.getByDeviceId(deviceId)
+
+    if (!result) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Can not get credentials",
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
+        timestamp: new Date().toISOString()
+      })
+    }
+
+    res.status(StatusCodes.OK).send(result)
+  },
 
   async updateCredentials(req, res) {
     const deviceId = req.params.deviceId
     const options = req.body
     const result = await DeviceCredentialsService.update(deviceId, options)
     if (!result) {
-      res.status(StatusCodes.BAD_REQUEST).send({message: "Update credentials failed!"})
+      res.status(StatusCodes.BAD_REQUEST).send({
+        message: "Can not update credentials!",
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
+        timestamp: new Date().toISOString()
+      })
       return
     }
 

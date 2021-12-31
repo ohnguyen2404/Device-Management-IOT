@@ -1,14 +1,21 @@
-const TenantDAO = require("../dao/tenant");
 const DeviceDAO = require("../dao/device");
 const DeviceCredentialsService = require("../services/deviceCredentials");
 const constant = require("../helpers/constant")
+
 const DeviceService = {
   async getAll(tenantId, customerId) {
     return await DeviceDAO.getAll(tenantId, customerId);
   },
 
   async getById(deviceId) {
-    return await DeviceDAO.get(deviceId);
+    const device = await DeviceDAO.get(deviceId)
+    const deviceCredentials = await DeviceCredentialsService.getByDeviceId(deviceId)
+    const response = {
+      device,
+      deviceCredentials
+    }
+
+    return response;
   },
 
   async create(reqUser, options) {
@@ -32,8 +39,14 @@ const DeviceService = {
     return await DeviceCredentialsService.create(deviceCredentialsInfo);
   },
 
-  async update(deviceId, options) {
-    return await DeviceDAO.update(deviceId, options);
+  async update(deviceId, userId, options) {
+    const { credentialsType, credentialsValue, ...deviceOptions } = options;
+    const deviceInfo = {
+      ...deviceOptions,
+      updateUid: userId
+    }
+    await DeviceDAO.update(deviceId, deviceInfo);
+    return await DeviceCredentialsService.update(deviceId, {userId, credentialsType, credentialsValue})
   },
 
   async delete(deviceId) {

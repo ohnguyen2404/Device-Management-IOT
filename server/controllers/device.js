@@ -23,7 +23,6 @@ module.exports = {
   async getDevice(req, res) {
     const deviceId = req.params.deviceId
     const result = await DeviceService.getById(deviceId)
-
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: `Can not get device with UUID: ${deviceId}!`,

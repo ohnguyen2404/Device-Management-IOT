@@ -3,10 +3,25 @@ const { DeviceCredentials } = require("../models");
 const constant = require("../helpers/constant");
 
 const DeviceCredentialsDAO = {
-  async getByCredentialsId(deviceToken) {
+  async getByCredentialsId(deviceToken, deviceId) {
     try {
       return await DeviceCredentials.findOne({
-        where: { credentialsId: deviceToken },
+        where: { 
+          credentialsId: deviceToken,
+          deviceId: {[Op.ne]: deviceId}
+        },
+      });
+    } catch (e) {
+      console.log("errorxxxxx", e.message);
+      return false;
+    }
+  },
+
+  async getByDeviceId(deviceId) {
+    try {
+      return await DeviceCredentials.findOne({
+        where: { deviceId },
+        raw: true
       });
     } catch (e) {
       console.log("error", e.message);
@@ -49,15 +64,16 @@ const DeviceCredentialsDAO = {
   },
 
   async update(deviceId, options) {
+    console.log('deviceId', deviceId);
     console.log("options", options);
     try {
       await DeviceCredentials.update(
         { ...options },
-        { where: { id: deviceId } }
+        { where: {deviceId} }
       );
       return true;
     } catch (e) {
-      console.log("error", e.message);
+      console.log("errorhehehhehe", e.message);
       return false;
     }
   },
