@@ -31,8 +31,7 @@ module.exports = (app) => {
     [
       authJwt.verifyToken,
       authJwt.isTenantOrAdmin,
-      validator.validateDeviceDetails,
-      validator.validateDeviceCredentials  
+      validator.validateDeviceDetails
     ],
     deviceController.updateDevice)
   app.delete(
@@ -49,7 +48,6 @@ module.exports = (app) => {
       authJwt.verifyToken,
       authJwt.isTenantOrAdmin,
       validator.validateDeviceDetails,
-      validator.validateDeviceCredentials
     ],
     deviceController.createDevice)
 
@@ -68,6 +66,7 @@ module.exports = (app) => {
     [
       authJwt.verifyToken,
       authJwt.isTenantOrAdmin,
+      validator.validateDeviceCredentials
     ],
     deviceCredentialsController.updateCredentials
   )

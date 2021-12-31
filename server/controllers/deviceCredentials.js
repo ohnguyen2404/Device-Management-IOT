@@ -29,13 +29,14 @@ module.exports = {
       })
     }
 
-    res.status(StatusCodes.OK).send(result)
+    res.status(StatusCodes.OK).send({deviceCredentials: result})
   },
 
   async updateCredentials(req, res) {
     const deviceId = req.params.deviceId
     const options = req.body
-    const result = await DeviceCredentialsService.update(deviceId, options)
+    const userId = req.userId
+    const result = await DeviceCredentialsService.update(deviceId, {userId, ...options})
     if (!result) {
       res.status(StatusCodes.BAD_REQUEST).send({
         message: "Can not update credentials!",

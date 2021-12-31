@@ -8,14 +8,7 @@ const DeviceService = {
   },
 
   async getById(deviceId) {
-    const device = await DeviceDAO.get(deviceId)
-    const deviceCredentials = await DeviceCredentialsService.getByDeviceId(deviceId)
-    const response = {
-      device,
-      deviceCredentials
-    }
-
-    return response;
+    return await DeviceDAO.get(deviceId)
   },
 
   async create(reqUser, options) {
@@ -45,8 +38,7 @@ const DeviceService = {
       ...deviceOptions,
       updateUid: userId
     }
-    await DeviceDAO.update(deviceId, deviceInfo);
-    return await DeviceCredentialsService.update(deviceId, {userId, credentialsType, credentialsValue})
+    return await DeviceDAO.update(deviceId, deviceInfo);
   },
 
   async delete(deviceId) {
