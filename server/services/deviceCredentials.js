@@ -89,10 +89,15 @@ const DeviceCredentialsService = {
           .update(mqttBasicToken)
           .digest("hex");
 
-        credentials = await DeviceCredentialsDAO.getByCredentialsId(
-          mqttBasicHashToken,
-          deviceId
-        );
+        if (deviceId) {
+          credentials = await DeviceCredentialsDAO.getByMqttClientId(mqttBasicToken, deviceId)
+        }
+        else {
+          credentials = await DeviceCredentialsDAO.getByCredentialsId(
+            mqttBasicHashToken,
+            deviceId
+          );
+        }
         break;
 
       default:

@@ -3,12 +3,12 @@ const { DeviceCredentials } = require("../models");
 const constant = require("../helpers/constant");
 
 const DeviceCredentialsDAO = {
-  async getByCredentialsId(deviceToken, deviceId) {
+  async getByCredentialsId(deviceToken, deviceId = null) {
     try {
       return await DeviceCredentials.findOne({
-        where: { 
+        where: {
           credentialsId: deviceToken,
-          deviceId: {[Op.ne]: deviceId}
+          deviceId: { [Op.ne]: deviceId },
         },
       });
     } catch (e) {
@@ -21,7 +21,7 @@ const DeviceCredentialsDAO = {
     try {
       return await DeviceCredentials.findOne({
         where: { deviceId },
-        raw: true
+        raw: true,
       });
     } catch (e) {
       console.log("error", e.message);
@@ -29,22 +29,17 @@ const DeviceCredentialsDAO = {
     }
   },
 
-  async getByCredentialsValue(value, type) {
+  async getByMqttClientId(value, deviceId) {
     try {
-      if (type !== constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC) {
-        return await DeviceCredentials.findOne({
-          where: { credentialsValue: value },
-        });
-      } else {
-        const valueObj = JSON.parse(value);
-        const qs = `{"clientId":"${valueObj.clientId}"`;
+      const valueObj = JSON.parse(value);
+      const qs = `{"clientId":"${valueObj.clientId}"`;
 
-        return await DeviceCredentials.findOne({
-          where: {
-            credentialsValue: { [Op.startsWith]: qs },
-          },
-        });
-      }
+      return await DeviceCredentials.findOne({
+        where: {
+          credentialsValue: { [Op.startsWith]: qs },
+          deviceId: { [Op.ne]: deviceId }
+        },
+      });
     } catch (e) {
       console.log("error", e.message);
       return false;
@@ -64,13 +59,10 @@ const DeviceCredentialsDAO = {
   },
 
   async update(deviceId, options) {
-    console.log('deviceId', deviceId);
+    console.log("deviceId", deviceId);
     console.log("options", options);
     try {
-      await DeviceCredentials.update(
-        { ...options },
-        { where: {deviceId} }
-      );
+      await DeviceCredentials.update({ ...options }, { where: { deviceId } });
       return true;
     } catch (e) {
       console.log("errorhehehhehe", e.message);

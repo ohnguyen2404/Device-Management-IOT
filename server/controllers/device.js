@@ -33,7 +33,7 @@ module.exports = {
       return
     }
 
-    res.status(StatusCodes.OK).send({device:result})
+    res.status(StatusCodes.OK).send(result)
   },
 
   async createDevice(req, res) {

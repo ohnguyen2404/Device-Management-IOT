@@ -8,7 +8,14 @@ const DeviceService = {
   },
 
   async getById(deviceId) {
-    return await DeviceDAO.get(deviceId)
+    const device = await DeviceDAO.get(deviceId)
+    const deviceCredentials = await DeviceCredentialsService.getByDeviceId(deviceId)
+    const response = {
+      device,
+      deviceCredentials
+    }
+
+    return response;
   },
 
   async create(reqUser, options) {
