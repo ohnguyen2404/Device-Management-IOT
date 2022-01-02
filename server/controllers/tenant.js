@@ -107,9 +107,8 @@ module.exports = {
       })
       return
     }
+    console.log(result)
 
-    res.status(StatusCodes.OK).send({
-      message: "Register tenant successful!"
-    })
+    res.status(StatusCodes.OK).send({id: result.id})
   }
 }
