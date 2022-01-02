@@ -2,6 +2,8 @@ const DeviceCredentialsDAO = require("../dao/deviceCredentials");
 const DeviceDAO = require("../dao/device");
 const constant = require("../helpers/constant");
 const crypto = require("crypto");
+const TenantDAO = require("../dao/tenant");
+const CustomerDAO = require("../dao/customer");
 
 const preProcessToken = (credentialsType, credentialsValue) => {
   let rawCredentialsValue;
@@ -108,11 +110,15 @@ const DeviceCredentialsService = {
     const device = await DeviceDAO.get(credentials.deviceId);
     let userId
     if (device.tenantId) {
-      userId = device.tenantId
+      const userTenant = await TenantDAO.get(device.tenantId)
+      console.log('userTenant', userTenant);
+      userId = userTenant.userId
     }
 
     if (device.customerId) {
-      userId = device.customerId
+      const userCustomer = await CustomerDAO.get(device.customerId)
+      console.log('userCustomer', userCustomer);
+      userId = userCustomer.userId
     }
     const response = {
       ...device,
