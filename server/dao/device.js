@@ -22,7 +22,7 @@ const DeviceDAO = {
 
   async get(deviceId) {
     try {
-      return await Device.findByPk(deviceId)
+      return await Device.findByPk(deviceId, {raw: true})
     }
     catch (e) {
       console.log('error', e.message);
@@ -80,6 +80,22 @@ const DeviceDAO = {
         {where: {id: deviceId}}
       )
       return true
+    }
+    catch (e) {
+      console.log('error', e.message);
+      return false
+    }
+  },
+
+  async getByNameExcludeOwnId (deviceName, deviceId) {
+    console.log('deviceIdhere', deviceId);
+    try {
+      return await Device.findOne({
+        where: {
+          name: deviceName,
+          id: {[Op.ne]: deviceId}
+        }
+      })
     }
     catch (e) {
       console.log('error', e.message);

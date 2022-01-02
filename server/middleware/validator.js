@@ -2,7 +2,7 @@ const validate = require("validate.js");
 const { StatusCodes, getReasonPhrase } = require("http-status-codes");
 const { AUTHORITIES } = require("../helpers/constant");
 const constant = require("../helpers/constant");
-const DeviceCredentialsDAO = require("../dao/deviceCredentials");
+const DeviceCredentialsService = require("../services/deviceCredentials");
 const DeviceDAO = require("../dao/device");
 
 const constraint = {
@@ -50,7 +50,7 @@ validateField = (field) => {
   };
 };
 
-validCredentialsTypes = (credentialsType) => {
+checkCredentialsTypes = (credentialsType) => {
   const validTypes = [
     constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN,
     constant.DEVICE_CREDENTIALS_TYPE_X_509,
@@ -87,8 +87,40 @@ validateAuthorities = async (req, res, next) => {
   next();
 };
 
-validateCreateDeviceInfo = async (req, res, next) => {
-  const { name, credentialsType, credentialsValue } = req.body;
+validateDeviceDetails = async (req, res, next) => {
+  const { name } = req.body;
+
+  // Case update device
+  if (req.params.deviceId) {
+    const existedOtherDeviceName = await DeviceDAO.getByNameExcludeOwnId(
+      name,
+      req.params.deviceId
+    );
+    console.log('existedOtherDeviceName', existedOtherDeviceName);
+    if (existedOtherDeviceName) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .send({ message: `Device name: ${name} is already existed` });
+      return;
+    }
+
+    next();
+  }
+  else {
+    const existedDeviceName = await DeviceDAO.getByName(name);
+    if (existedDeviceName) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .send({ message: `Device name: ${name} is already existed` });
+      return;
+    }
+    next();
+  }
+};
+
+validateDeviceCredentials = async (req, res, next) => {
+  const { credentialsType, credentialsValue } = req.body;
+
   if (!credentialsType) {
     res
       .status(StatusCodes.BAD_REQUEST)
@@ -96,18 +128,10 @@ validateCreateDeviceInfo = async (req, res, next) => {
     return;
   }
 
-  if (!validCredentialsTypes(credentialsType)) {
+  if (!checkCredentialsTypes(credentialsType)) {
     res
       .status(StatusCodes.BAD_REQUEST)
       .send({ message: `Credentials type: ${credentialsType} is invalid` });
-    return;
-  }
-
-  const existedDeviceName = await DeviceDAO.getByName(name);
-  if (existedDeviceName) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .send({ message: `Device name: ${name} is already existed` });
     return;
   }
 
@@ -120,30 +144,65 @@ validateCreateDeviceInfo = async (req, res, next) => {
     }
   }
 
-  const strCredentialsValue = JSON.stringify(credentialsValue);
-  const existedCredentials = await DeviceCredentialsDAO.getByCredentialsValue(
-    strCredentialsValue,
-    credentialsType
-  );
-  if (existedCredentials) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .send({ message: "Credentials value has already existed" });
-    return;
+  let _credentialsValue
+  if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN) {
+    _credentialsValue = credentialsValue.accessToken
+  }
+  if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_X_509) {
+    _credentialsValue = credentialsValue.RSAPublicKey
+  }
+  if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC) {
+    _credentialsValue = {
+      clientId: credentialsValue.clientId,
+      username: credentialsValue.username,
+      password: credentialsValue.password
+    }
   }
 
-  next();
+  // Case update device
+  if (req.params.deviceId) {
+    const existedOtherDeviceCredentialsId =
+      await DeviceCredentialsService.validateToken(
+        _credentialsValue,
+        credentialsType,
+        req.params.deviceId
+      );
+
+    if (existedOtherDeviceCredentialsId) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .send({ message: "Credentials value has already existed" });
+      return;
+    }
+    next();
+    return;
+  } 
+  else {
+    const existedCredentials = await DeviceCredentialsService.validateToken(
+      _credentialsValue,
+      credentialsType
+    );
+    if (existedCredentials) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .send({ message: "Credentials value has already existed" });
+      return;
+    }
+    next();
+  }
 };
 
-validateCredentials = (req, res, next) => {
+validateDeviceToken = (req, res, next) => {
   const { token, type } = req.body;
   if (!token) {
     res.status(StatusCodes.BAD_REQUEST).send({ message: "Empty token!" });
     return;
   }
 
-  if (!validCredentialsTypes(type)) {
-    res.status(StatusCodes.BAD_REQUEST).send({ message: `Credentials type: ${type} is invalid` });
+  if (!checkCredentialsTypes(type)) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .send({ message: `Credentials type: ${type} is invalid` });
     return;
   }
 
@@ -153,8 +212,9 @@ validateCredentials = (req, res, next) => {
 const validator = {
   validateField: validateField,
   validateAuthorities: validateAuthorities,
-  validateCreateDeviceInfo: validateCreateDeviceInfo,
-  validateCredentials: validateCredentials,
+  validateDeviceDetails: validateDeviceDetails,
+  validateDeviceCredentials: validateDeviceCredentials,
+  validateDeviceToken: validateDeviceToken,
 };
 
 module.exports = validator;

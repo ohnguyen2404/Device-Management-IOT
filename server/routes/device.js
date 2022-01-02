@@ -11,7 +11,9 @@ module.exports = (app) => {
     )
     next();
   })
- 
+
+  // Device Details
+
   app.get(
     "/devices",
     [
@@ -29,6 +31,7 @@ module.exports = (app) => {
     [
       authJwt.verifyToken,
       authJwt.isTenantOrAdmin,
+      validator.validateDeviceDetails
     ],
     deviceController.updateDevice)
   app.delete(
@@ -44,24 +47,35 @@ module.exports = (app) => {
     [
       authJwt.verifyToken,
       authJwt.isTenantOrAdmin,
-      validator.validateCreateDeviceInfo
+      validator.validateDeviceDetails,
     ],
     deviceController.createDevice)
+
+  // Device Credentials
+  app.get(
+    "/devices/credentials/:deviceId",
+    [
+      authJwt.verifyToken,
+      authJwt.isTenantOrAdmin,
+    ],
+    deviceCredentialsController.getCredentials
+  )
 
   app.put(
     "/devices/credentials/:deviceId",
     [
       authJwt.verifyToken,
       authJwt.isTenantOrAdmin,
+      validator.validateDeviceCredentials
     ],
     deviceCredentialsController.updateCredentials
   )
 
-  //Public API-s for validate device credentials by token value
+  // Public API-s for validate device credentials by token value
   app.post(
     "/device/validate",
     [
-      validator.validateCredentials
+      validator.validateDeviceToken
     ],
     deviceCredentialsController.validateToken
   )
