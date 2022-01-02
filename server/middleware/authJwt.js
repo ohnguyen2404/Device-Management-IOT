@@ -58,13 +58,24 @@ verifyToken = async (req, res, next) => {
     isAdmin = true
   }
 
+  console.log('sub', sub);
   if (checkRoleExist(authorities, constant.ROLE_TENANT)) {
     const userTenant = await TenantDAO.getByUserId(sub)
+    if (!userTenant) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Can't find tenant information with provided token."
+      })
+    }
     tenantId = userTenant.id
   }
 
   if (checkRoleExist(authorities, constant.ROLE_CUSTOMER)) {
     const userCustomer = await CustomerDAO.getByUserId(sub)
+    if (!userCustomer) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Can't find customer information with provided token."
+      })
+    }
     customerId = userCustomer.id
   }
 

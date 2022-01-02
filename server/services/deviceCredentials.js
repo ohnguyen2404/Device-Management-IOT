@@ -105,7 +105,21 @@ const DeviceCredentialsService = {
     }
 
     if (!credentials) return false;
-    return await DeviceDAO.get(credentials.deviceId);
+    const device = await DeviceDAO.get(credentials.deviceId);
+    let userId
+    if (device.tenantId) {
+      userId = device.tenantId
+    }
+
+    if (device.customerId) {
+      userId = device.customerId
+    }
+    const response = {
+      ...device,
+      userId
+    }
+
+    return response
   },
 
   async create(options) {
