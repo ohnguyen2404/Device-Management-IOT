@@ -97,11 +97,10 @@ const TenantDAO = {
 
   async register(userId, email) {
     try {
-      await Tenant.create({
+      return await Tenant.create({
         userId,
         email,
       });
-      return true;
     } catch (e) {
       console.log("error", e.message);
       return false;

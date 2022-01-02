@@ -60,7 +60,7 @@ const TenantService = {
     if (await TenantDAO.existsByEmail(email)) {
       return false;
     }
-    return await TenantDAO.create(userId, options);
+    return await TenantDAO.register(userId, email);
   },
 
   async update(tenantId, options, token) {
