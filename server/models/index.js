@@ -35,8 +35,8 @@ db.Customer.belongsTo(db.Tenant, {foreignKey: 'tenantId'})
 db.Device.belongsTo(db.Tenant, {foreignKey: 'tenantId'})
 db.Device.belongsTo(db.Customer, {foreignKey: 'customerId'})
 
-db.DeviceCredentials.belongsTo(db.Device, {foreignKey: 'deviceId'})
-db.Device.hasOne(db.DeviceCredentials, {foreignKey: 'deviceId'})
+db.DeviceCredentials.belongsTo(db.Device, {foreignKey: 'deviceId', as: "deviceCredentials"})
+db.Device.hasOne(db.DeviceCredentials, {foreignKey: 'deviceId', as: "deviceCredentials"})
 
 
 module.exports = db;

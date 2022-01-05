@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-const {Device} = require('../models')
+const {Device, DeviceCredentials} = require('../models')
 
 const DeviceDAO = {
   async getAll(tenantId, customerId) {
@@ -11,11 +11,15 @@ const DeviceDAO = {
           ? {tenantId,customerId}
           : {tenantId}
         ]
-      } 
-
+      },
+      include: {
+        model: DeviceCredentials,
+        required: true,
+        as: "deviceCredentials"
+      }
     }
-    console.log('deviceQuery', deviceQuery);
-    const devices = await Device.findAll(deviceQuery)
+
+    const devices = await Device.findAll(deviceQuery, {raw: true})
 
     return devices
   },
