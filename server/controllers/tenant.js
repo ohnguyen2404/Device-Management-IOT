@@ -1,11 +1,23 @@
 const TenantService = require('../services/tenant')
+const EntityService = require("../services/entity")
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
   async getTenants(req, res) {
-    const {authorities, tenantId} = req
+    const {authorities, userId} = req
+
+    const userEntity = await EntityService.getUserEntity(userId, authorities);
+    if (!userEntity) {
+      res.status(StatusCodes.BAD_REQUEST).send({
+        message: "Can't find entity information with provided token.",
+      });
+      return;
+    }
+
+    const { tenantId } = userEntity;
+
     const result = await TenantService.getAll({authorities, tenantId})
-    console.log('res', result);
+
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not get tenants!",
@@ -39,7 +51,17 @@ module.exports = {
 
   async createTenant(req, res) {
     const options = req.body
-    const {tenantId, authorities} = req
+    const {userId, authorities} = req
+
+    const userEntity = await EntityService.getUserEntity(userId, authorities);
+    if (!userEntity) {
+      res.status(StatusCodes.BAD_REQUEST).send({
+        message: "Can't find entity information with provided token.",
+      });
+      return;
+    }
+
+    const { tenantId } = userEntity;
     const result = await TenantService.create({tenantId, authorities}, options, req.token)
 
     if (!result) {
@@ -60,6 +82,7 @@ module.exports = {
   async updateTenant(req, res) {
     const tenantId = req.params.tenantId
     const options = req.body
+    
     const result = await TenantService.update(tenantId, options, req.token)
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

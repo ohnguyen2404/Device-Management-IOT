@@ -33,6 +33,10 @@ const CustomerService = {
     };
   },
 
+  async getByUserId(userId) {
+    return await CustomerDAO.getByUserId(userId)
+  },
+
   async create(reqUser, options, token) {
     const { email, firstName, lastName, authorities, ...restOptions } = options;
 
@@ -40,6 +44,7 @@ const CustomerService = {
       (await TenantDAO.existsByEmail(email)) ||
       (await CustomerDAO.existsByEmail(email))
     ) {
+      console.log('Existed email');
       return false;
     }
 

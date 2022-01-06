@@ -19,6 +19,7 @@ const AuthApi = {
 
   async createUser(data, token) {
     try {
+      console.log('data', data);
       const response = await axiosApi.post(
         '/user', 
         data, 

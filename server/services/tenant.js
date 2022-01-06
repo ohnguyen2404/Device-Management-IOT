@@ -25,6 +25,10 @@ const TenantService = {
     }
   },
 
+  async getByUserId(userId) {
+    return await TenantDAO.getByUserId(userId)
+  },
+
   async create(reqUser, options, token) {
     const { email, firstName, lastName, authorities, ...restOptions } = options;
 
@@ -32,6 +36,7 @@ const TenantService = {
       (await TenantDAO.existsByEmail(email)) ||
       (await CustomerDAO.existsByEmail(email))
     ) {
+      console.log('Existed email');
       return false;
     }
 

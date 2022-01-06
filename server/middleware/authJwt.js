@@ -50,38 +50,12 @@ verifyToken = async (req, res, next) => {
     })
   }
 
-  // We will get tenantId and/or customerId of the user here for further processing
-  let tenantId = null
-  let customerId = null
   let isAdmin = false
   if (checkRoleExist(authorities, constant.ROLE_ADMIN)) {
     isAdmin = true
   }
 
-  console.log('sub', sub);
-  if (checkRoleExist(authorities, constant.ROLE_TENANT)) {
-    const userTenant = await TenantDAO.getByUserId(sub)
-    if (!userTenant) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-        message: "Can't find tenant information with provided token."
-      })
-    }
-    tenantId = userTenant.id
-  }
-
-  if (checkRoleExist(authorities, constant.ROLE_CUSTOMER)) {
-    const userCustomer = await CustomerDAO.getByUserId(sub)
-    if (!userCustomer) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-        message: "Can't find customer information with provided token."
-      })
-    }
-    customerId = userCustomer.id
-  }
-
   req.isAdmin = isAdmin
-  req.tenantId = tenantId
-  req.customerId = customerId
   req.userId = sub
   req.authorities = authorities
   req.token = token

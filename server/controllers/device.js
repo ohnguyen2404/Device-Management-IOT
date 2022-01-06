@@ -1,12 +1,21 @@
 const DeviceService = require('../services/device')
+const EntityService = require('../services/entity')
 const {StatusCodes, getReasonPhrase} = require('http-status-codes')
 
 module.exports = {
   async getDevices(req, res) {
-    const {tenantId, customerId} = req
+    const {userId, authorities} = req
+    const userEntity = await EntityService.getUserEntity(userId, authorities);
+    if (!userEntity) {
+      res.status(StatusCodes.BAD_REQUEST).send({
+        message: "Can't find entity information with provided token.",
+      });
+      return;
+    }
+
+    const { tenantId, customerId } = userEntity;
 
     const result = await DeviceService.getAll(tenantId, customerId)
-
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not get devices!",
@@ -38,9 +47,18 @@ module.exports = {
 
   async createDevice(req, res) {
     const options = req.body
-    const {userId, tenantId, authorities} = req
-    const result = await DeviceService.create({userId, tenantId, authorities}, options)
+    const {userId, authorities} = req
+    const userEntity = await EntityService.getUserEntity(userId, authorities);
+    if (!userEntity) {
+      res.status(StatusCodes.BAD_REQUEST).send({
+        message: "Can't find entity information with provided token.",
+      });
+      return;
+    }
 
+    const { tenantId } = userEntity;
+    
+    const result = await DeviceService.create({userId, tenantId, authorities}, options)
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not create device!",
