@@ -35,17 +35,17 @@ const TenantService = {
       return false;
     }
 
+    const tenantId = reqUser.tenantId
 
     // call external-api to create new user and retreive userId
     const userId = await AuthApi.createUser(
-      { email, firstName, lastName, authorities },
+      { email, firstName, lastName, authorities, tenantId },
       token
     );
     if (!userId) {
       return false;
     }
 
-    const tenantId = reqUser.tenantId
 
     return await TenantDAO.createWithCreateUid(userId, reqUser.userId, {
       ...restOptions,

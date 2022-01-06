@@ -51,7 +51,7 @@ const CustomerService = {
 
     // call external-api to create new user and retreive userId
     const userId = await AuthApi.createUser(
-      { email, firstName, lastName, authorities },
+      { email, firstName, lastName, authorities, tenantId, customerId},
       token
     );
 
