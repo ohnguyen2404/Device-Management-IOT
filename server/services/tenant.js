@@ -32,14 +32,6 @@ const TenantService = {
   async create(reqUser, options, token) {
     const { email, firstName, lastName, authorities, ...restOptions } = options;
 
-    if (
-      (await TenantDAO.existsByEmail(email)) ||
-      (await CustomerDAO.existsByEmail(email))
-    ) {
-      console.log('Existed email');
-      return false;
-    }
-
     const tenantId = reqUser.tenantId
 
     // call external-api to create new user and retreive userId
@@ -50,7 +42,6 @@ const TenantService = {
     if (!userId) {
       return false;
     }
-
 
     return await TenantDAO.createWithCreateUid(userId, reqUser.userId, {
       ...restOptions,

@@ -54,6 +54,14 @@ module.exports = {
   async createCustomer(req, res) {
     const options = req.body;
     const { userId, authorities } = req;
+    const {email} = options
+    if (EntityService.isExistedEmail(email)) {
+      res.status(StatusCodes.BAD_REQUEST).send({
+        message: "Email has already existed.",
+      });
+      return;
+    }
+    
     const userEntity = await EntityService.getUserEntity(userId, authorities);
     if (!userEntity) {
       res.status(StatusCodes.BAD_REQUEST).send({

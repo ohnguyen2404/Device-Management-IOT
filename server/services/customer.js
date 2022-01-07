@@ -40,14 +40,6 @@ const CustomerService = {
   async create(reqUser, options, token) {
     const { email, firstName, lastName, authorities, ...restOptions } = options;
 
-    if (
-      (await TenantDAO.existsByEmail(email)) ||
-      (await CustomerDAO.existsByEmail(email))
-    ) {
-      console.log('Existed email');
-      return false;
-    }
-
     // tenantId of the reqUser
     const tenantId = reqUser.tenantId;
 
