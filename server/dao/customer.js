@@ -34,7 +34,7 @@ const CustomerDAO = {
     return (await Customer.findOne(query)) !== null;
   },
 
-  async get(customerId) {
+  async getById(customerId) {
     try {
       return await Customer.findByPk(customerId, {raw: true});
     } catch (e) {

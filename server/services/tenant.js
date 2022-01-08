@@ -68,7 +68,7 @@ const TenantService = {
       deleted = false,
       ...restOptions
     } = options;
-    const updatedTenant = await TenantDAO.get(tenantId);
+    const updatedTenant = await TenantDAO.getById(tenantId);
 
     if (!updatedTenant) {
       return false
@@ -86,12 +86,12 @@ const TenantService = {
     );
     
     await TenantDAO.update(tenantId, restOptions);
-    
+
     return await this.getById(tenantId)
   },
 
   async delete(tenantId, token) {
-    const tenantUser = await TenantDAO.get(tenantId);
+    const tenantUser = await TenantDAO.getById(tenantId);
     if (tenantUser.userId) {
       await AuthApi.deleteUser(tenantUser.userId, token);
       return await TenantDAO.delete(tenantId);

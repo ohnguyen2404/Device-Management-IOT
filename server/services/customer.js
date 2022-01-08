@@ -24,7 +24,7 @@ const CustomerService = {
   },
 
   async getById(customerId, token) {
-    const customer = await CustomerDAO.get(customerId);
+    const customer = await CustomerDAO.getById(customerId);
     const user = await AuthApi.getUser(customer.userId, token);
 
     return {
@@ -74,7 +74,7 @@ const CustomerService = {
       deleted = false,
       ...restOptions
     } = options;
-    const updatedCustomer = await CustomerDAO.get(customerId);
+    const updatedCustomer = await CustomerDAO.getById(customerId);
 
     if (!updatedCustomer) {
       return false;
@@ -97,7 +97,7 @@ const CustomerService = {
   },
 
   async delete(customerId, token) {
-    const customerUser = await CustomerDAO.get(customerId);
+    const customerUser = await CustomerDAO.getById(customerId);
     if (customerUser.userId) {
       await AuthApi.deleteUser(customerUser.userId, token);
       return await CustomerDAO.delete(customerId);
