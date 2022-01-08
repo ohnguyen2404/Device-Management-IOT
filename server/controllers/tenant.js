@@ -34,7 +34,7 @@ module.exports = {
   async getTenant(req, res) {
     const {token} = req
     const tenantId = req.params.tenantId
-    const result = await TenantService.get(tenantId, token)
+    const result = await TenantService.getById(tenantId, token)
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -53,7 +53,8 @@ module.exports = {
     const options = req.body
     const {userId, authorities} = req
     const {email} = options
-    if (EntityService.isExistedEmail(email)) {
+    const isExistedEmail = await EntityService.isExistedEmail(email)
+    if (isExistedEmail) {
       res.status(StatusCodes.BAD_REQUEST).send({
         message: "Email has already existed.",
       });
@@ -81,9 +82,7 @@ module.exports = {
       return
     }
 
-    res.status(StatusCodes.OK).send({
-      message: "Create tenant successful!"
-    })
+    res.status(StatusCodes.OK).send(result)
   },
 
   async updateTenant(req, res) {
@@ -100,9 +99,8 @@ module.exports = {
       })
       return
     }
-    res.status(StatusCodes.OK).send({
-      message: "Update tenant successful!"
-    })
+
+    res.status(StatusCodes.OK).send(result)
   },
 
   async deleteTenant(req, res) {

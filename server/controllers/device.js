@@ -68,10 +68,7 @@ module.exports = {
       })
       return
     }
-
-    res.status(StatusCodes.OK).send({
-      message: "Create device successfully!"
-    })
+    res.status(StatusCodes.OK).send(result)
   },
 
   async updateDevice(req, res) {
@@ -89,9 +86,8 @@ module.exports = {
       })
       return
     }
-    res.status(StatusCodes.OK).send({
-      message: "Update device successfully!"
-    })
+
+    res.status(StatusCodes.OK).send(result)
   },
 
   async removeDevice(req, res) {

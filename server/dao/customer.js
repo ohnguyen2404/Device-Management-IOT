@@ -57,12 +57,11 @@ const CustomerDAO = {
 
   async createWithCreateUid(userId, createUid, options) {
     try {
-      await Customer.create({
+      return await Customer.create({
         ...options,
         userId,
         createUid,
       });
-      return true;
     } catch (e) {
       console.log("error", e.message);
       return false;

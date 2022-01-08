@@ -1,5 +1,4 @@
 const TenantDAO = require("../dao/tenant");
-const CustomerDAO = require("../dao/customer");
 const AuthApi = require("../external-api/auth");
 const constant = require("../helpers/constant")
 
@@ -15,8 +14,8 @@ const TenantService = {
     return false;
   },
 
-  async get(tenantId, token) {
-    const tenant = await TenantDAO.get(tenantId);
+  async getById(tenantId, token) {
+    const tenant = await TenantDAO.getById(tenantId);
     const user = await AuthApi.getUser(tenant.userId, token)
 
     return {
@@ -43,11 +42,13 @@ const TenantService = {
       return false;
     }
 
-    return await TenantDAO.createWithCreateUid(userId, reqUser.userId, {
+    const createTenant = await TenantDAO.createWithCreateUid(userId, reqUser.userId, {
       ...restOptions,
       email,
       tenantId,
     });
+
+    return await this.getById(createTenant.id)
   },
 
   async register(userId, options) {
@@ -84,7 +85,9 @@ const TenantService = {
       token
     );
     
-    return await TenantDAO.update(tenantId, restOptions);
+    await TenantDAO.update(tenantId, restOptions);
+    
+    return await this.getById(tenantId)
   },
 
   async delete(tenantId, token) {

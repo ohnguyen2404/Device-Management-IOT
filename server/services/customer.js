@@ -23,7 +23,7 @@ const CustomerService = {
     return customerList;
   },
 
-  async get(customerId, token) {
+  async getById(customerId, token) {
     const customer = await CustomerDAO.get(customerId);
     const user = await AuthApi.getUser(customer.userId, token);
 
@@ -56,12 +56,14 @@ const CustomerService = {
       return false;
     }
 
-    return await CustomerDAO.createWithCreateUid(userId, reqUser.userId, {
+    const createCustomer = await CustomerDAO.createWithCreateUid(userId, reqUser.userId, {
       ...restOptions,
       email,
       tenantId,
       customerId,
     });
+
+    return await this.getById(createCustomer.id)
   },
 
   async update(customerId, options, token) {
@@ -89,7 +91,9 @@ const CustomerService = {
       token
     );
 
-    return await CustomerDAO.update(customerId, restOptions);
+    await CustomerDAO.update(customerId, restOptions);
+
+    return await this.getById(customerId)
   },
 
   async delete(customerId, token) {

@@ -35,7 +35,7 @@ module.exports = (app) => {
     "/customers/:customerId",
     [
       authJwt.verifyToken,
-      authJwt.isAdmin
+      authJwt.isTenantOrAdmin
     ],
     customerController.deleteCustomer)
   

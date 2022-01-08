@@ -25,7 +25,7 @@ const TenantDAO = {
     return (await Tenant.findOne(query)) !== null;
   },
 
-  async get(tenantId) {
+  async getById(tenantId) {
     try {
       return await Tenant.findByPk(tenantId, {raw: true});
     } catch (e) {
@@ -48,12 +48,11 @@ const TenantDAO = {
 
   async createWithCreateUid(userId, createUid, options) {
     try {
-      await Tenant.create({
+      return await Tenant.create({
         ...options,
         userId,
         createUid,
       });
-      return true;
     } catch (e) {
       console.log("error", e.message);
       return false;

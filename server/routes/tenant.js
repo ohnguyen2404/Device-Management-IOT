@@ -37,7 +37,7 @@ module.exports = (app) => {
     "/tenants/:tenantId",
     [
       authJwt.verifyToken,
-      authJwt.isAdmin
+      authJwt.isTenantOrAdmin
     ],
     tenantController.deleteTenant)
   
