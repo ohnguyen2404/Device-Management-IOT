@@ -107,10 +107,10 @@ const DeviceCredentialsService = {
     }
 
     if (!credentials) return false;
-    const device = await DeviceDAO.get(credentials.deviceId);
+    const device = await DeviceDAO.getByIdWithoutCredentials(credentials.deviceId);
     let userId
     if (device.tenantId) {
-      const userTenant = await TenantDAO.get(device.tenantId)
+      const userTenant = await TenantDAO.getById(device.tenantId)
       console.log('userTenant', userTenant);
       userId = userTenant.userId
     }

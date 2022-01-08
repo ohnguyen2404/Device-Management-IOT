@@ -22,7 +22,16 @@ const DeviceDAO = {
     return devices;
   },
 
-  async get(deviceId) {
+  async getByIdWithoutCredentials(deviceId) {
+    try {
+      return await Device.findByPk(deviceId, { raw: true });
+    } catch (e) {
+      console.log("error", e.message);
+      return false;
+    }
+  },
+
+  async getById(deviceId) {
     try {
       return await Device.findByPk(
         deviceId,
