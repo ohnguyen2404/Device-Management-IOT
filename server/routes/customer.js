@@ -1,5 +1,5 @@
 const customerController = require('../controllers').customer
-const {validator, authJwt} = require('../middleware')
+const {authJwt} = require('../middleware')
 const constants = require('../helpers/constant')
 
 module.exports = (app) => {

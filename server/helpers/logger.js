@@ -11,7 +11,7 @@ const logConfiguration = {
   ],
   format: winston.format.combine(
     winston.format.label({
-      label: `Logger 🏷️:`,
+      label: `IOT_Entity 🏷️:`,
     }),
     winston.format.timestamp({
       format: "MMM-DD-YYYY HH:mm:ss",

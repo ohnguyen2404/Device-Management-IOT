@@ -58,7 +58,7 @@ module.exports = {
 
     const { tenantId } = userEntity;
     
-    const result = await DeviceService.create({userId, tenantId, authorities}, options)
+    const result = await DeviceService.create({userId, tenantId}, options)
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not create device!",
@@ -73,8 +73,16 @@ module.exports = {
 
   async updateDevice(req, res) {
     const deviceId = req.params.deviceId
-    const {userId} = req
+    const {userId, authorities} = req
     const options = req.body
+    
+    const userEntity = await EntityService.getUserEntity(userId, authorities);
+    if (!userEntity) {
+      res.status(StatusCodes.BAD_REQUEST).send({
+        message: "Can't find entity information with provided token.",
+      });
+      return;
+    }
 
     const result = await DeviceService.update(deviceId, userId, options)
     if (!result) {

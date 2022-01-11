@@ -1,7 +1,7 @@
 const {v4: uuidv4} = require('uuid')
 
 module.exports = (sequelize, Sequelize) => {
-  const widgetBundle = sequelize.define('widget_bundle', {
+  const widgetsBundle = sequelize.define('widgets_bundle', {
     id: {
       type: Sequelize.UUID,
       primaryKey: true
@@ -44,6 +44,6 @@ module.exports = (sequelize, Sequelize) => {
     }
   });
 
-  widgetBundle.beforeCreate(bundle => bundle.id = uuidv4())
-  return widgetBundle;
+  widgetsBundle.beforeCreate(bundle => bundle.id = uuidv4())
+  return widgetsBundle;
 };

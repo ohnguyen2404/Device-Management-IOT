@@ -13,11 +13,8 @@ const DeviceService = {
   async create(reqUser, options) {
     const { credentialsType, credentialsValue, ...deviceOptions } = options;
 
-    const tenantId = reqUser.tenantId;
-    const reqUserId = reqUser.userId;
-
     const createDevice = await DeviceDAO.create(
-      { reqUserId, tenantId },
+      reqUser,
       deviceOptions
     );
 
@@ -25,7 +22,7 @@ const DeviceService = {
       deviceId: createDevice.id,
       credentialsType,
       credentialsValue,
-      createUid: reqUserId,
+      createUid: reqUser.userId,
     };
 
     await DeviceCredentialsService.create(deviceCredentialsInfo);

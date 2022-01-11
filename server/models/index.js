@@ -26,12 +26,12 @@ db.Customer = require("./customer")(sequelize, Sequelize);
 db.Tenant = require("./tenant")(sequelize, Sequelize);
 db.Device = require("./device")(sequelize, Sequelize);
 db.DeviceCredentials = require("./deviceCredentials")(sequelize, Sequelize);
-db.WidgetBundle = require("./widgetBundle")(sequelize, Sequelize);
+db.WidgetsBundle = require("./widgetsBundle")(sequelize, Sequelize);
 db.WidgetType = require("./widgetType")(sequelize, Sequelize);
 
 db.Tenant.hasMany(db.Device, { foreignKey: "tenantId" });
 db.Tenant.hasMany(db.Customer, { foreignKey: "tenantId" });
-db.Tenant.hasMany(db.WidgetBundle, { foreignKey: "tenantId" });
+db.Tenant.hasMany(db.WidgetsBundle, { foreignKey: "tenantId" });
 db.Tenant.hasMany(db.WidgetType, { foreignKey: "tenantId" });
 
 db.Customer.hasMany(db.Device, { foreignKey: "customerId" });
@@ -49,7 +49,7 @@ db.Device.hasOne(db.DeviceCredentials, {
   as: "deviceCredentials",
 });
 
-db.WidgetBundle.belongsTo(db.Tenant, { foreignKey: "tenantId" });
+db.WidgetsBundle.belongsTo(db.Tenant, { foreignKey: "tenantId" });
 db.WidgetType.belongsTo(db.Tenant, { foreignKey: "tenantId" });
 
 

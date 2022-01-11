@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const { Device, DeviceCredentials } = require("../models");
+const logger = require('../helpers/logger')
 
 const DeviceDAO = {
   async getAll(tenantId, customerId) {
@@ -26,7 +27,7 @@ const DeviceDAO = {
     try {
       return await Device.findByPk(deviceId, { raw: true });
     } catch (e) {
-      console.log("error", e.message);
+      logger.error(e.message)
       return false;
     }
   },
@@ -45,7 +46,7 @@ const DeviceDAO = {
         { raw: true }
       );
     } catch (e) {
-      console.log("error", e.message);
+      logger.error(e.message)
       return false;
     }
   },
@@ -56,32 +57,29 @@ const DeviceDAO = {
         where: { name },
       });
     } catch (e) {
-      console.log("error", e.message);
+      logger.error(e.message)
       return false;
     }
   },
 
-  async create(user, options) {
-    console.log("options", options);
-
+  async create(reqUser, options) {
     try {
       return await Device.create({
         ...options,
-        tenantId: user.tenantId,
-        createUid: user.reqUserId,
+        tenantId: reqUser.tenantId,
+        createUid: reqUser.userId,
       });
     } catch (e) {
-      console.log("error", e.message);
+      logger.error(e.message)
       return false;
     }
   },
 
   async update(deviceId, options) {
-    console.log("options", options);
     try {
       return await Device.update({ ...options }, { where: { id: deviceId } });
     } catch (e) {
-      console.log("error", e.message);
+      logger.error(e.message)
       return false;
     }
   },
@@ -91,7 +89,7 @@ const DeviceDAO = {
       await Device.update({ deleted: true }, { where: { id: deviceId } });
       return true;
     } catch (e) {
-      console.log("error", e.message);
+      logger.error(e.message)
       return false;
     }
   },
@@ -105,7 +103,7 @@ const DeviceDAO = {
         },
       });
     } catch (e) {
-      console.log("error", e.message);
+      logger.error(e.message)
       return false;
     }
   },
