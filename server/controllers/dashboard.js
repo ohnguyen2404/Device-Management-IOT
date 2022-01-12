@@ -1,17 +1,15 @@
-const WidgetTypeService = require("../services/widgetType");
+const DashboardService = require("../services/dashboard");
 const EntityService = require("../services/entity");
 const { StatusCodes, getReasonPhrase } = require("http-status-codes");
 
 const generateAlias = (title) => {
-  const alias = title.trim().toLowerCase().replace(/\s/g, "_");
+  const alias = title.trim().toLowerCase().replace(" ", "_");
   return alias;
 };
 
 module.exports = {
-  async getWidgetTypes(req, res) {
+  async getDashboards(req, res) {
     const { authorities, userId } = req;
-    const { bundleAlias } = req.query;
-
     const userEntity = await EntityService.getUserEntity(userId, authorities);
     if (!userEntity) {
       res.status(StatusCodes.BAD_REQUEST).send({
@@ -22,14 +20,11 @@ module.exports = {
 
     const { tenantId } = userEntity;
 
-    const result = await WidgetTypeService.getAllByTenantId(
-      tenantId,
-      bundleAlias
-    );
+    const result = await DashboardService.getAllByTenantId(tenantId);
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-        message: "Can not get widget types!",
+        message: "Can not get dashboards!",
         status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString(),
@@ -40,13 +35,13 @@ module.exports = {
     res.status(StatusCodes.OK).send(result);
   },
 
-  async getWidgetType(req, res) {
-    const widgetId = req.params.widgetId;
-    const result = await WidgetTypeService.getById(widgetId);
+  async getDashboard(req, res) {
+    const dashboardId = req.params.dashboardId;
+    const result = await DashboardService.getById(dashboardId);
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-        message: `Can not get widget type with UUID: ${widgetId}!`,
+        message: `Can not get dashboards with UUID: ${dashboardId}!`,
         status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString(),
@@ -57,7 +52,7 @@ module.exports = {
     res.status(StatusCodes.OK).send(result);
   },
 
-  async createWidgetType(req, res) {
+  async createDashboard(req, res) {
     const options = req.body;
     const { userId, authorities } = req;
     const userEntity = await EntityService.getUserEntity(userId, authorities);
@@ -68,38 +63,27 @@ module.exports = {
       return;
     }
 
-    const { name, bundleAlias } = options;
-    if (!name) {
+    const { title } = options;
+    if (!title) {
       res.status(StatusCodes.BAD_REQUEST).send({
-        message: "Widget Type's name can not be empty",
+        message: "Dashboard's title can not be empty",
       });
       return;
     }
 
-    const alias = generateAlias(name);
-    if (await EntityService.isExistedWidgetTypeAlias(alias)) {
+    if (await EntityService.isExistedDashboardTitle(title)) {
       res.status(StatusCodes.BAD_REQUEST).send({
-        message: "Widget Type's alias has already existed.",
-      });
-      return;
-    }
-
-    if (!(await EntityService.isExistedWidgetsBundleAlias(bundleAlias))) {
-      res.status(StatusCodes.BAD_REQUEST).send({
-        message: `Can not find Widgets Bundle with alias: ${bundleAlias}.`,
+        message: "Dashboard title has already existed.",
       });
       return;
     }
 
     const { tenantId } = userEntity;
-    const result = await WidgetTypeService.create(
-      { tenantId, userId },
-      { alias, ...options }
-    );
+    const result = await DashboardService.create({ tenantId, userId }, options);
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-        message: "Can not create widget type!",
+        message: "Can not create dashboards!",
         status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString(),
@@ -110,8 +94,8 @@ module.exports = {
     res.status(StatusCodes.OK).send(result);
   },
 
-  async updateWidgetType(req, res) {
-    const widgetId = req.params.widgetId;
+  async updateDashboard(req, res) {
+    const dashboardId = req.params.dashboardId;
     const options = req.body;
     const { userId, authorities } = req;
 
@@ -123,17 +107,25 @@ module.exports = {
       return;
     }
 
-    const { name } = options;
-    if (!name) {
+    const { title } = options;
+    if (!title) {
       res.status(StatusCodes.BAD_REQUEST).send({
-        message: "Widget Type's name can not be empty",
+        message: "Dashboard's title can not be empty",
       });
+      return;
     }
 
-    const result = await WidgetTypeService.update(widgetId, options);
+    if (await EntityService.isExistedDashboardTitle(title, dashboardId)) {
+      res.status(StatusCodes.BAD_REQUEST).send({
+        message: "Dashboard title has already existed.",
+      });
+      return;
+    }
+
+    const result = await DashboardService.update(dashboardId, options);
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-        message: "Can not update widget type!",
+        message: "Can not update dashboard!",
         status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString(),
@@ -144,13 +136,13 @@ module.exports = {
     res.status(StatusCodes.OK).send(result);
   },
 
-  async deleteWidgetType(req, res) {
-    const widgetId = req.params.widgetId;
+  async deleteDashboard(req, res) {
+    const dashboardId = req.params.dashboardId;
 
-    const result = await WidgetTypeService.delete(widgetId);
+    const result = await DashboardService.delete(dashboardId);
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-        message: "Can not delete widget type!",
+        message: "Can not delete dashboard!",
         status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
         statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
         timestamp: new Date().toISOString(),
@@ -159,7 +151,27 @@ module.exports = {
     }
 
     res.status(StatusCodes.OK).send({
-      message: "Delete widget type successful!",
+      message: "Delete dashboards successful!",
     });
   },
+
+  async assignDashboardCustomer(req, res) {
+    const dashboardId = req.params.dashboardId
+    const {customerIds} = req.body
+
+    const result = await DashboardService.assignCustomers(customerIds, dashboardId)
+    if (!result) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Can not assign customers to dashboard!",
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    res.status(StatusCodes.OK).send({
+      message: "Assign customers to dashboard successful!",
+    });
+  }
 };

@@ -28,14 +28,18 @@ db.Device = require("./device")(sequelize, Sequelize);
 db.DeviceCredentials = require("./deviceCredentials")(sequelize, Sequelize);
 db.WidgetsBundle = require("./widgetsBundle")(sequelize, Sequelize);
 db.WidgetType = require("./widgetType")(sequelize, Sequelize);
+db.Dashboard = require("./dashboard")(sequelize, Sequelize);
+db.DashboardCustomer = require("./dashboardCustomer")(sequelize, Sequelize);
 
 db.Tenant.hasMany(db.Device, { foreignKey: "tenantId" });
 db.Tenant.hasMany(db.Customer, { foreignKey: "tenantId" });
 db.Tenant.hasMany(db.WidgetsBundle, { foreignKey: "tenantId" });
 db.Tenant.hasMany(db.WidgetType, { foreignKey: "tenantId" });
+db.Tenant.hasMany(db.Dashboard, {foreignKey: "tenantId"});
 
 db.Customer.hasMany(db.Device, { foreignKey: "customerId" });
 db.Customer.belongsTo(db.Tenant, { foreignKey: "tenantId" });
+db.Customer.hasMany(db.DashboardCustomer, {foreignKey: "customerId"});
 
 db.Device.belongsTo(db.Tenant, { foreignKey: "tenantId" });
 db.Device.belongsTo(db.Customer, { foreignKey: "customerId" });
@@ -52,5 +56,10 @@ db.Device.hasOne(db.DeviceCredentials, {
 db.WidgetsBundle.belongsTo(db.Tenant, { foreignKey: "tenantId" });
 db.WidgetType.belongsTo(db.Tenant, { foreignKey: "tenantId" });
 
+db.Dashboard.hasMany(db.DashboardCustomer, {foreignKey: "dashboardId"})
+db.Dashboard.belongsTo(db.Tenant, { foreignKey: "tenantId"});
+
+db.DashboardCustomer.belongsTo(db.Dashboard, {foreignKey: "dashboardId"})
+db.DashboardCustomer.belongsTo(db.Customer, {foreignKey: "customerId"})
 
 module.exports = db;

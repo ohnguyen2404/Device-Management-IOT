@@ -4,6 +4,7 @@ const TenantDAO = require("../dao/tenant");
 const CustomerDAO = require("../dao/customer");
 const WidgetsBundleDAO = require("../dao/widgetsBundle");
 const WidgetTypeDAO = require("../dao/widgetType");
+const DashboardDAO = require("../dao/dashboard")
 
 const constant = require("../helpers/constant");
 const logger = require("../helpers/logger");
@@ -66,6 +67,14 @@ const EntityService = {
       return true;
     }
 
+    return false;
+  },
+
+  async isExistedDashboardTitle(title, dashboardId = null) {
+    if (await DashboardDAO.getByTitleExcludeOwnId(title, dashboardId)) {
+      return true;
+    }
+    
     return false;
   }
 };

@@ -1,8 +1,8 @@
 const WidgetTypeDAO = require("../dao/widgetType");
 
 const WidgetTypeService = {
-  async getAllByTenantId(tenantId) {
-    return await WidgetTypeDAO.getAllByTenantId(tenantId);
+  async getAllByTenantId(tenantId, bundleAlias = null) {
+    return await WidgetTypeDAO.getAllByTenantId(tenantId, bundleAlias);
   },
 
   async getById(widgetId) {

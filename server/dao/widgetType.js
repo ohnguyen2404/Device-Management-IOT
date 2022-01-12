@@ -9,9 +9,10 @@ const WidgetTypeDAO = {
     });
   },
 
-  async getAllByTenantId(tenantId) {
+  async getAllByTenantId(tenantId, bundleAlias) {
     return await WidgetType.findAll({
       where: {
+        bundleAlias,
         tenantId,
         deleted: false,
       },

@@ -18,9 +18,9 @@ const WidgetsBundleDAO = {
     });
   },
 
-  async getById(widgetsBundleId) {
+  async getById(bundleId) {
     try {
-      return await WidgetsBundle.findByPk(widgetsBundleId, { raw: true });
+      return await WidgetsBundle.findByPk(bundleId, { raw: true });
     } catch (e) {
       logger.error(e.message);
       return false;

@@ -1,7 +1,7 @@
 const {v4: uuidv4} = require('uuid')
 
 module.exports = (sequelize, Sequelize) => {
-  const WidgetsBundle = sequelize.define('widgets_bundle', {
+  const Dashboard = sequelize.define('dashboard', {
     id: {
       type: Sequelize.UUID,
       primaryKey: true
@@ -16,15 +16,11 @@ module.exports = (sequelize, Sequelize) => {
     title: {
       type: Sequelize.STRING
     },
-    alias: {
-      type: Sequelize.STRING,
-      unique: true
-    },
     image: {
       type: Sequelize.STRING(10000)
     },
-    description: {
-      type: Sequelize.STRING,
+    configuration: {
+      type: Sequelize.STRING(1000000),
     },
     deleted: {
       type: Sequelize.BOOLEAN,
@@ -44,6 +40,6 @@ module.exports = (sequelize, Sequelize) => {
     }
   });
 
-  WidgetsBundle.beforeCreate(bundle => bundle.id = uuidv4())
-  return WidgetsBundle;
+  Dashboard.beforeCreate(dashboard => dashboard.id = uuidv4())
+  return Dashboard;
 };
