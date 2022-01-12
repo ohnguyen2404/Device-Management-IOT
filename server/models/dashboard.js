@@ -16,8 +16,11 @@ module.exports = (sequelize, Sequelize) => {
     title: {
       type: Sequelize.STRING
     },
+    assignedCustomers: {
+      type: Sequelize.STRING(1000000)
+    },
     image: {
-      type: Sequelize.STRING(10000)
+      type: Sequelize.STRING
     },
     configuration: {
       type: Sequelize.STRING(1000000),

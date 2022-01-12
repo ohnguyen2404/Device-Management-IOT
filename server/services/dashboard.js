@@ -31,8 +31,8 @@ const DashboardService = {
     return await DashboardDAO.delete(dashboardId)
   },
 
-  async assignCustomers(customerIds, dashboardId) {
-    return await DashboardDAO.assignCustomers(customerIds, dashboardId)
+  async assignCustomers(customers, dashboardId) {
+    return await DashboardDAO.assignCustomers(customers, dashboardId)
   }
 };
 

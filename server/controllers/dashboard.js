@@ -2,11 +2,6 @@ const DashboardService = require("../services/dashboard");
 const EntityService = require("../services/entity");
 const { StatusCodes, getReasonPhrase } = require("http-status-codes");
 
-const generateAlias = (title) => {
-  const alias = title.trim().toLowerCase().replace(" ", "_");
-  return alias;
-};
-
 module.exports = {
   async getDashboards(req, res) {
     const { authorities, userId } = req;
@@ -157,9 +152,10 @@ module.exports = {
 
   async assignDashboardCustomer(req, res) {
     const dashboardId = req.params.dashboardId
-    const {customerIds} = req.body
+    const {customers} = req.body
+    const str_customers = JSON.stringify(customers)
 
-    const result = await DashboardService.assignCustomers(customerIds, dashboardId)
+    const result = await DashboardService.assignCustomers(str_customers, dashboardId)
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not assign customers to dashboard!",

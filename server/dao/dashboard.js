@@ -76,15 +76,11 @@ const DashboardDAO = {
     }
   },
 
-  async assignCustomers(customerIds, dashboardId) {
+  async assignCustomers(customers, dashboardId) {
     try {
-      await Promise.all(
-        customerIds.map(async (customerId) => {
-          await DashboardCustomer.upsert({
-            dashboardId,
-            customerId,
-          });
-        })
+      await Dashboard.update(
+        { assignedCustomers: customers },
+        { where: { id: dashboardId } }
       );
       return true;
     } catch (e) {

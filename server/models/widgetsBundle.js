@@ -21,7 +21,7 @@ module.exports = (sequelize, Sequelize) => {
       unique: true
     },
     image: {
-      type: Sequelize.STRING(10000)
+      type: Sequelize.STRING
     },
     description: {
       type: Sequelize.STRING,
