@@ -16,6 +16,9 @@ module.exports = (sequelize, Sequelize) => {
     title: {
       type: Sequelize.STRING
     },
+    description: {
+      type: Sequelize.STRING
+    },
     assignedCustomers: {
       type: Sequelize.STRING(1000000)
     },
