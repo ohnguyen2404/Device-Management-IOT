@@ -28,25 +28,25 @@ module.exports = (app) => {
   );
   app.put(
     "/dashboards/:dashboardId",
-    [
-      authJwt.verifyToken,
-      authJwt.isTenantOrAdmin
-    ],
-    dashboardController.updateDashboard)
+    [authJwt.verifyToken, authJwt.isTenantOrAdmin],
+    dashboardController.updateDashboard
+  );
+
+  app.put(
+    "/dashboards/:dashboardId/configuration",
+    [authJwt.verifyToken, authJwt.isTenantOrAdmin],
+    dashboardController.updateDashboardConfiguration
+  );
+
   app.delete(
     "/dashboards/:dashboardId",
-    [
-      authJwt.verifyToken,
-      authJwt.isTenantOrAdmin
-    ],
-    dashboardController.deleteDashboard)
-  
+    [authJwt.verifyToken, authJwt.isTenantOrAdmin],
+    dashboardController.deleteDashboard
+  );
+
   app.post(
     "/dashboards/:dashboardId/customer",
-    [
-      authJwt.verifyToken,
-      authJwt.isTenantOrAdmin
-    ],
+    [authJwt.verifyToken, authJwt.isTenantOrAdmin],
     dashboardController.assignDashboardCustomer
-  )
+  );
 };

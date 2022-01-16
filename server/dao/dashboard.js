@@ -15,6 +15,7 @@ const DashboardDAO = {
         tenantId,
         deleted: false,
       },
+      raw: true
     });
   },
 
@@ -57,6 +58,17 @@ const DashboardDAO = {
   async update(dashboardId, options) {
     try {
       await Dashboard.update({ ...options }, { where: { id: dashboardId } });
+
+      return true;
+    } catch (e) {
+      logger.error(e.message);
+      return false;
+    }
+  },
+
+  async updateConfiguration(dashboardId, widgets) {
+    try {
+      await Dashboard.update({ configuration: widgets }, { where: { id: dashboardId } });
 
       return true;
     } catch (e) {

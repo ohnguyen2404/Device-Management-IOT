@@ -131,6 +131,33 @@ module.exports = {
     res.status(StatusCodes.OK).send(result);
   },
 
+  async updateDashboardConfiguration(req, res) {
+    const dashboardId = req.params.dashboardId;
+    const options = req.body;
+    const { userId, authorities } = req;
+
+    const userEntity = await EntityService.getUserEntity(userId, authorities);
+    if (!userEntity) {
+      res.status(StatusCodes.BAD_REQUEST).send({
+        message: "Can't find entity information with provided token.",
+      });
+      return;
+    }
+
+    const result = await DashboardService.updateConfiguration(dashboardId, options);
+    if (!result) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+        message: "Can not update dashboard!",
+        status: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+        statusValue: StatusCodes.INTERNAL_SERVER_ERROR,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    res.status(StatusCodes.OK).send(result);
+  },
+
   async deleteDashboard(req, res) {
     const dashboardId = req.params.dashboardId;
 
