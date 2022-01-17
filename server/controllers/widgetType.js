@@ -10,7 +10,6 @@ const generateAlias = (title) => {
 module.exports = {
   async getWidgetTypes(req, res) {
     const { authorities, userId } = req;
-    const { bundleAlias } = req.query;
 
     const userEntity = await EntityService.getUserEntity(userId, authorities);
     if (!userEntity) {
@@ -22,10 +21,7 @@ module.exports = {
 
     const { tenantId } = userEntity;
 
-    const result = await WidgetTypeService.getAllByTenantId(
-      tenantId,
-      bundleAlias
-    );
+    const result = await WidgetTypeService.getAllByTenantId(tenantId);
 
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

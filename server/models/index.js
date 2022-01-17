@@ -56,4 +56,7 @@ db.WidgetType.belongsTo(db.Tenant, { foreignKey: "tenantId" });
 
 db.Dashboard.belongsTo(db.Tenant, { foreignKey: "tenantId"});
 
+db.WidgetsBundle.initial()
+db.WidgetType.initial()
+
 module.exports = db;

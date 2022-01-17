@@ -12,7 +12,9 @@ const WidgetsBundleDAO = {
   async getAllByTenantId(tenantId) {
     return await WidgetsBundle.findAll({
       where: {
-        tenantId,
+        tenantId: {
+          [Op.or]: [null, tenantId],
+        },
         deleted: false,
       },
     });

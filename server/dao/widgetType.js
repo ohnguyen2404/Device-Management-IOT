@@ -9,11 +9,12 @@ const WidgetTypeDAO = {
     });
   },
 
-  async getAllByTenantId(tenantId, bundleAlias) {
+  async getAllByTenantId(tenantId) {
     return await WidgetType.findAll({
       where: {
-        bundleAlias,
-        tenantId,
+        tenantId: {
+          [Op.or]: [null, tenantId],
+        },
         deleted: false,
       },
     });
