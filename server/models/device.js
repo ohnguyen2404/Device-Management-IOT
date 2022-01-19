@@ -20,6 +20,9 @@ module.exports = (sequelize, Sequelize) => {
         key: 'id'
       }
     },
+    ruleChainId: {
+      type: Sequelize.UUID
+    },
     deviceData: {
       type: Sequelize.JSON
     },
