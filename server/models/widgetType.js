@@ -112,8 +112,8 @@ module.exports = (sequelize, Sequelize) => {
   WidgetType.beforeCreate((widget) => (widget.id = uuidv4()));
 
   WidgetType.initial = () => {
-    defaultWidgetTypes.forEach((widget) => {
-      WidgetType.findOrCreate({
+    defaultWidgetTypes.forEach(async (widget) => {
+      await WidgetType.findOrCreate({
         where: {
           ...widget,
         },

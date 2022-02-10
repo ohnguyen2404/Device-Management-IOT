@@ -75,8 +75,8 @@ module.exports = (sequelize, Sequelize) => {
   WidgetsBundle.beforeCreate((bundle) => (bundle.id = uuidv4()));
 
   WidgetsBundle.initial = () => {
-    defaultWidgetBundles.forEach((bundle) => {
-      WidgetsBundle.findOrCreate({
+    defaultWidgetBundles.forEach(async (bundle) => {
+      await WidgetsBundle.findOrCreate({
         where: {
           ...bundle
         },

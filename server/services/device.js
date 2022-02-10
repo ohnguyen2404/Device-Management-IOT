@@ -1,48 +1,64 @@
-const DeviceDAO = require("../dao/device");
-const DeviceCredentialsService = require("../services/deviceCredentials");
+const DeviceDAO = require("../dao/device")
+const DeviceCredentialsService = require("../services/deviceCredentials")
+const constant = require("../helpers/constant")
 
 const DeviceService = {
-  async getAll(tenantId, customerId) {
-    return await DeviceDAO.getAll(tenantId, customerId);
-  },
+    async getAll(userEntity) {
+        const {authorities, id, firstTenantId} = userEntity
+        if (authorities.includes(constant.ROLE_ADMIN)) {
+            return await DeviceDAO.getAll()
+        }
 
-  async getById(deviceId) {
-    return await DeviceDAO.getById(deviceId);
-  },
+        if (authorities.includes(constant.ROLE_CUSTOMER)) {
+            const deviceIds = await DeviceDAO.getCustomerDevices(id)
+            return await DeviceDAO.getByDeviceIds(deviceIds)
+        }
 
-  async create(reqUser, options) {
-    const { credentialsType, credentialsValue, ...deviceOptions } = options;
+        if (authorities.includes(constant.ROLE_TENANT)) {
+            // Is first class tenant
+            if (id === firstTenantId) {
+                return await DeviceDAO.getByFirstTenantId(id)
+            }
+            const deviceIds = await DeviceDAO.getTenantDevices(id)
+            console.log('deviceIds', deviceIds);
+            return await DeviceDAO.getByDeviceIds(deviceIds)
+        }
+    },
 
-    const createDevice = await DeviceDAO.create(
-      reqUser,
-      deviceOptions
-    );
+    async getById(deviceId) {
+        return await DeviceDAO.getById(deviceId)
+    },
 
-    const deviceCredentialsInfo = {
-      deviceId: createDevice.id,
-      credentialsType,
-      credentialsValue,
-      createUid: reqUser.userId,
-    };
+    async create(reqTenant, options) {
+        const {credentialsType, credentialsValue, ...deviceOptions} = options
 
-    await DeviceCredentialsService.create(deviceCredentialsInfo);
-    
-    return await this.getById(createDevice.id);
-  },
+        const createDevice = await DeviceDAO.create(reqTenant, deviceOptions)
 
-  async update(deviceId, userId, options) {
-    const deviceInfo = {
-      ...options,
-      updateUid: userId,
-    };
-    await DeviceDAO.update(deviceId, deviceInfo);
+        const deviceCredentialsInfo = {
+            deviceId: createDevice.id,
+            credentialsType,
+            credentialsValue,
+            createUid: reqTenant.userId,
+        }
 
-    return await this.getById(deviceId);
-  },
+        await DeviceCredentialsService.create(deviceCredentialsInfo)
 
-  async delete(deviceId) {
-    return await DeviceDAO.delete(deviceId);
-  },
-};
+        return await this.getById(createDevice.id)
+    },
 
-module.exports = DeviceService;
+    async update(deviceId, userId, options) {
+        const deviceInfo = {
+            ...options,
+            updateUid: userId,
+        }
+        await DeviceDAO.update(deviceId, deviceInfo)
+
+        return await this.getById(deviceId)
+    },
+
+    async delete(deviceId) {
+        return await DeviceDAO.delete(deviceId)
+    },
+}
+
+module.exports = DeviceService

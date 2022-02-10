@@ -17,15 +17,7 @@ const EntityService = {
 
       if (!customerUser) return false;
 
-      if (customerUser.tenantId) {
-        tenantId = customerUser.tenantId;
-      }
-
-      if (customerUser.customerId) {
-        customerId = customerUser.customerId;
-      } else {
-        customerId = customerUser.id;
-      }
+      return customerUser
     }
 
     if (authorities.includes(constant.ROLE_TENANT)) {
@@ -33,14 +25,8 @@ const EntityService = {
 
       if (!tenantUser) return false;
 
-      if (tenantUser.tenantId) {
-        tenantId = tenantUser.tenantId;
-      } else {
-        tenantId = tenantUser.id;
-      }
+      return tenantUser
     }
-
-    return { customerId, tenantId };
   },
 
   async isExistedEmail(email) {

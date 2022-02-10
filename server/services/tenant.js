@@ -1,103 +1,105 @@
-const TenantDAO = require("../dao/tenant");
-const AuthApi = require("../external-api/auth");
+const TenantDAO = require("../dao/tenant")
+const AuthApi = require("../external-api/auth")
 const constant = require("../helpers/constant")
 
 const TenantService = {
-  async getAll(user) {
-    const { authorities, tenantId } = user;
-    if (authorities.includes(constant.ROLE_ADMIN)) return await TenantDAO.getAll();
+    async getAll(userTenant) {
+        const {authorities, id: userTenantId, firstTenantId} = userTenant
+        if (authorities.includes(constant.ROLE_ADMIN)) return await TenantDAO.getAll()
 
-    if (authorities.includes(constant.ROLE_TENANT)) {
-      return await TenantDAO.getAllByTenantId(tenantId);
-    }
+        if (authorities.includes(constant.ROLE_TENANT)) {
+            // Is first class tenant
+            if (userTenantId === firstTenantId) {
+                return await TenantDAO.getAllByFirstTenantId(userTenantId)
+            }
+            return await TenantDAO.getAllByTenantId(userTenantId)
+        }
 
-    return false;
-  },
+        return false
+    },
 
-  async getById(tenantId, token) {
-    const tenant = await TenantDAO.getById(tenantId);
-    const user = await AuthApi.getUser(tenant.userId, token)
+    async getById(tenantId, token) {
+        const tenant = await TenantDAO.getById(tenantId)
+        const user = await AuthApi.getUser(tenant.userId, token)
 
-    return {
-      ...tenant,
-      ...user
-    }
-  },
+        return {
+            ...tenant,
+            ...user,
+        }
+    },
 
-  async getByUserId(userId) {
-    return await TenantDAO.getByUserId(userId)
-  },
+    async getByUserId(userId) {
+        return await TenantDAO.getByUserId(userId)
+    },
 
-  async create(reqUser, options, token) {
-    const { email, firstName, lastName, authorities, ...restOptions } = options;
+    async create(reqTenant, options, token) {
+        const {email, firstName, lastName, authorities, ...restOptions} = options
 
-    const tenantId = reqUser.tenantId
+        const {id: reqTenantId, firstTenantId, userId: reqTenantUserId} = reqTenant
 
-    // call external-api to create new user and retreive userId
-    const userId = await AuthApi.createUser(
-      { email, firstName, lastName, authorities, tenantId },
-      token
-    );
-    if (!userId) {
-      return false;
-    }
+        const createTenant = await TenantDAO.createWithCreateUid(reqTenantUserId, {
+            ...restOptions,
+            email,
+            tenantId: reqTenantId,
+            firstTenantId,
+        })
 
-    const createTenant = await TenantDAO.createWithCreateUid(userId, reqUser.userId, {
-      ...restOptions,
-      email,
-      tenantId,
-    });
+        // call external-api to create new user and retreive userId
+        const userId = await AuthApi.createUser(
+            {email, firstName, lastName, authorities, tenantId: createTenant.id},
+            token
+        )
 
-    return await this.getById(createTenant.id)
-  },
+        await TenantDAO.update(createTenant.id, {userId})
 
-  async register(userId, options) {
-    const { email } = options;
+        if (!userId) {
+            return false
+        }
 
-    if (await TenantDAO.existsByEmail(email)) {
-      return false;
-    }
-    return await TenantDAO.register(userId, email);
-  },
+        return await this.getById(createTenant.id)
+    },
 
-  async update(tenantId, options, token) {
-    const {
-      email,
-      firstName,
-      lastName,
-      deleted = false,
-      ...restOptions
-    } = options;
-    const updatedTenant = await TenantDAO.getById(tenantId);
+    async register(userId, options) {
+        const {email} = options
 
-    if (!updatedTenant) {
-      return false
-    }
+        if (await TenantDAO.existsByEmail(email)) {
+            return false
+        }
+        return await TenantDAO.register(userId, email)
+    },
 
-    await AuthApi.updateUser(
-      updatedTenant.userId,
-      {
-        email,
-        firstName,
-        lastName,
-        deleted,
-      },
-      token
-    );
-    
-    await TenantDAO.update(tenantId, restOptions);
+    async update(tenantId, options, token) {
+        const {email, firstName, lastName, deleted = false, ...restOptions} = options
+        const updatedTenant = await TenantDAO.getById(tenantId)
 
-    return await this.getById(tenantId)
-  },
+        if (!updatedTenant) {
+            return false
+        }
 
-  async delete(tenantId, token) {
-    const tenantUser = await TenantDAO.getById(tenantId);
-    if (tenantUser.userId) {
-      await AuthApi.deleteUser(tenantUser.userId, token);
-      return await TenantDAO.delete(tenantId);
-    }
-    return false;
-  },
-};
+        await AuthApi.updateUser(
+            updatedTenant.userId,
+            {
+                email,
+                firstName,
+                lastName,
+                deleted,
+            },
+            token
+        )
 
-module.exports = TenantService;
+        await TenantDAO.update(tenantId, restOptions)
+
+        return await this.getById(tenantId)
+    },
+
+    async delete(tenantId, token) {
+        const tenantUser = await TenantDAO.getById(tenantId)
+        if (tenantUser.userId) {
+            await AuthApi.deleteUser(tenantUser.userId, token)
+            return await TenantDAO.delete(tenantId)
+        }
+        return false
+    },
+}
+
+module.exports = TenantService

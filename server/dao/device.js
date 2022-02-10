@@ -1,112 +1,223 @@
-const { Op } = require("sequelize");
-const { Device, DeviceCredentials } = require("../models");
-const logger = require('../helpers/logger')
+const {Op} = require("sequelize")
+const {Device, DeviceCredentials, CustomerDevice, TenantDevice, Customer, Tenant} = require("../models")
+const logger = require("../helpers/logger")
 
 const DeviceDAO = {
-  async getAll(tenantId, customerId) {
-    const deviceQuery = {
-      where: {
-        [Op.and]: [
-          { deleted: false },
-          customerId ? { tenantId, customerId } : { tenantId },
-        ],
-      },
-      include: {
-        model: DeviceCredentials,
-        required: true,
-        as: "deviceCredentials",
-      },
-    };
+    async getAll() {
+        const deviceQuery = {
+            include: {
+                model: DeviceCredentials,
+                required: true,
+                as: "deviceCredentials",
+            },
+        }
 
-    const devices = await Device.findAll(deviceQuery, { raw: true });
+        return await Device.findAll(deviceQuery, {raw: true})
+    },
 
-    return devices;
-  },
+    async getByFirstTenantId(firstTenantId) {
+        const deviceQuery = {
+            where: {
+                firstTenantId,
+            },
+            include: {
+                model: DeviceCredentials,
+                required: true,
+                as: "deviceCredentials",
+            },
+        }
 
-  async getByIdWithoutCredentials(deviceId) {
-    try {
-      return await Device.findByPk(deviceId, { raw: true });
-    } catch (e) {
-      logger.error(e.message)
-      return false;
-    }
-  },
+        return await Device.findAll(deviceQuery, {raw: true})
+    },
 
-  async getById(deviceId) {
-    try {
-      return await Device.findByPk(
-        deviceId,
-        {
-          include: {
-            model: DeviceCredentials,
-            required: true,
-            as: "deviceCredentials",
-          },
-        },
-        { raw: true }
-      );
-    } catch (e) {
-      logger.error(e.message)
-      return false;
-    }
-  },
+    async getByDeviceIds(deviceIds) {
+        const deviceQuery = {
+            where: {
+                id: deviceIds,
+            },
+            include: {
+                model: DeviceCredentials,
+                required: true,
+                as: "deviceCredentials",
+            },
+        }
 
-  async getByName(name) {
-    try {
-      return await Device.findOne({
-        where: { name },
-      });
-    } catch (e) {
-      logger.error(e.message)
-      return false;
-    }
-  },
+        return await Device.findAll(deviceQuery, {raw: true})
+    },
 
-  async create(reqUser, options) {
-    try {
-      return await Device.create({
-        ...options,
-        tenantId: reqUser.tenantId,
-        createUid: reqUser.userId,
-      });
-    } catch (e) {
-      logger.error(e.message)
-      return false;
-    }
-  },
+    async getByIdWithoutCredentials(deviceId) {
+        try {
+            return await Device.findByPk(deviceId, {raw: true})
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
 
-  async update(deviceId, options) {
-    try {
-      return await Device.update({ ...options }, { where: { id: deviceId } });
-    } catch (e) {
-      logger.error(e.message)
-      return false;
-    }
-  },
+    async getById(deviceId) {
+        try {
+            return await Device.findByPk(
+                deviceId,
+                {
+                    include: {
+                        model: DeviceCredentials,
+                        required: true,
+                        as: "deviceCredentials",
+                    },
+                },
+                {raw: true}
+            )
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
 
-  async delete(deviceId) {
-    try {
-      await Device.update({ deleted: true }, { where: { id: deviceId } });
-      return true;
-    } catch (e) {
-      logger.error(e.message)
-      return false;
-    }
-  },
+    async getByName(name) {
+        try {
+            return await Device.findOne({
+                where: {name},
+            })
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
 
-  async getByNameExcludeOwnId(deviceName, deviceId) {
-    try {
-      return await Device.findOne({
-        where: {
-          name: deviceName,
-          id: { [Op.ne]: deviceId },
-        },
-      });
-    } catch (e) {
-      logger.error(e.message)
-      return false;
-    }
-  },
-};
+    async create(reqTenant, options) {
+        try {
+            return await Device.create({
+                ...options,
+                firstTenantId: reqTenant.firstTenantId,
+                tenantId: reqTenant.id,
+                createUid: reqTenant.userId,
+            })
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
 
-module.exports = DeviceDAO;
+    async update(deviceId, options) {
+        try {
+            return await Device.update({...options}, {where: {id: deviceId}})
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async delete(deviceId) {
+        try {
+            await Device.update({deleted: true}, {where: {id: deviceId}})
+            return true
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async getByNameExcludeOwnId(deviceName, deviceId) {
+        try {
+            return await Device.findOne({
+                where: {
+                    name: deviceName,
+                    id: {[Op.ne]: deviceId},
+                },
+            })
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async getDeviceCustomers(deviceId) {
+        try {
+            const customers = await CustomerDevice.findAll({
+                where: {
+                    deviceId,
+                },
+                attributes: ["customerId"],
+                include: [
+                    {
+                        model: Customer,
+                        required: true,
+                    },
+                ],
+                //raw: true,
+            })
+            return customers
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async getCustomerDevices(customerId) {
+        try {
+            const assignedDevices = await CustomerDevice.findAll({
+                where: {
+                    customerId,
+                },
+                attributes: ["deviceId"],
+                raw: true,
+            })
+            return assignedDevices.map((d) => d.deviceId)
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async getDeviceTenants(deviceId) {
+        try {
+            const tenants = await TenantDevice.findAll({
+                where: {
+                    deviceId,
+                },
+                attributes: ["tenantId"],
+                include: [
+                    {
+                        model: Tenant,
+                        required: true,
+                    },
+                ],
+                //raw: true,
+            })
+            return tenants
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async getTenantDevices(tenantId) {
+        try {
+            const assignedDevices = await TenantDevice.findAll({
+                where: {
+                    tenantId,
+                },
+                attributes: ["deviceId"],
+                raw: true,
+            })
+
+            const tenantDevices = await Device.findAll({
+                where: {
+                    tenantId,
+                },
+                attributes: ["id"],
+                raw: true,
+            })
+
+            const tenantDeviceIds = tenantDevices.map((d) => d.id)
+            const assignedDeviceIds = assignedDevices.map((d) => d.deviceId)
+
+            return [...assignedDeviceIds, ...tenantDeviceIds]
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+}
+
+module.exports = DeviceDAO

@@ -1,165 +1,166 @@
-const DeviceCredentialsDAO = require("../dao/deviceCredentials");
-const DeviceDAO = require("../dao/device");
-const constant = require("../helpers/constant");
-const crypto = require("crypto");
-const TenantDAO = require("../dao/tenant");
-const CustomerDAO = require("../dao/customer");
+const DeviceCredentialsDAO = require("../dao/deviceCredentials")
+const DeviceDAO = require("../dao/device")
+const constant = require("../helpers/constant")
+const crypto = require("crypto")
+const TenantDAO = require("../dao/tenant")
 
 const preProcessToken = (credentialsType, credentialsValue) => {
-  let rawCredentialsValue;
-  let credentialsId;
-  if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN) {
-    // Default case: user don't provide any credentials
-    // Note: credentials type ACCESS_TOKEN will have it's credentials_value = null
-    if (!credentialsValue || !credentialsValue.accessToken) {
-      const randomAccessToken = crypto.randomBytes(10).toString("hex"); // generate 20 random chars
-      credentialsId = randomAccessToken;
-    } else {
-      credentialsId = credentialsValue.accessToken;
+    let rawCredentialsValue
+    let credentialsId
+    if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN) {
+        // Default case: user don't provide any credentials
+        // Note: credentials type ACCESS_TOKEN will have it's credentials_value = null
+        if (!credentialsValue || !credentialsValue.accessToken) {
+            const randomAccessToken = crypto.randomBytes(10).toString("hex") // generate 20 random chars
+            credentialsId = randomAccessToken
+        } else {
+            credentialsId = credentialsValue.accessToken
+        }
+        rawCredentialsValue = null
     }
-    rawCredentialsValue = null;
-  }
 
-  // Note: credentials type X.509 will have it's credentials_id = (SHA256) hash of it's RSA PublicKey
-  if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_X_509) {
-    const processedRSAPublicKey = credentialsValue.RSAPublicKey.replace(
-      "-----BEGIN PUBLIC KEY-----",
-      ""
-    )
-      .replace("-----END PUBLIC KEY-----", "")
-      .replace(/\n/g, "")
-      .trim();
+    // Note: credentials type X.509 will have it's credentials_id = (SHA256) hash of it's RSA PublicKey
+    if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_X_509) {
+        const processedRSAPublicKey = credentialsValue.RSAPublicKey.replace(
+            "-----BEGIN PUBLIC KEY-----",
+            ""
+        )
+            .replace("-----END PUBLIC KEY-----", "")
+            .replace(/\n/g, "")
+            .trim()
 
-    rawCredentialsValue = processedRSAPublicKey;
-    credentialsId = crypto
-      .createHash("sha256")
-      .update(rawCredentialsValue)
-      .digest("hex");
-  }
+        rawCredentialsValue = processedRSAPublicKey
+        credentialsId = crypto.createHash("sha256").update(rawCredentialsValue).digest("hex")
+    }
 
-  // Note: credentials type MQTT_BASIC will have it's credentials_id
-  // = (SHA256) hash of it's stringified object's value (clientId, username, password)
-  if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC) {
-    const mqttBasicInfo = {
-      clientId: credentialsValue.clientId,
-      username: credentialsValue.username,
-      password: credentialsValue.password,
-    };
+    // Note: credentials type MQTT_BASIC will have it's credentials_id
+    // = (SHA256) hash of it's stringified object's value (clientId, username, password)
+    if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC) {
+        const mqttBasicInfo = {
+            clientId: credentialsValue.clientId,
+            username: credentialsValue.username,
+            password: credentialsValue.password,
+        }
 
-    rawCredentialsValue = JSON.stringify(mqttBasicInfo);
-    credentialsId = crypto
-      .createHash("sha256")
-      .update(rawCredentialsValue)
-      .digest("hex");
-  }
+        rawCredentialsValue = JSON.stringify(mqttBasicInfo)
+        credentialsId = crypto.createHash("sha256").update(rawCredentialsValue).digest("hex")
+    }
 
-  return {credentialsId, rawCredentialsValue}
-};
+    return {credentialsId, rawCredentialsValue}
+}
+
+const getUserIdsRelatedToDevice = async (device) => {
+    const {tenantId ,firstTenantId, id} = device
+    // Tenant and first Tenant of device
+    const tenants = await TenantDAO.getByIds([tenantId, firstTenantId])
+    const tenantUserIds = tenants.map(t => t.userId)
+
+    // Assigned Customers
+    const assignedCustomers = await DeviceDAO.getDeviceCustomers(id)
+    const assignedCustomerUserIds = assignedCustomers.map(c => c.customer.userId)
+    
+    // Assigned Tenants
+    const assignedTenants = await DeviceDAO.getDeviceTenants(id)
+    const assignedTenantUserIds = assignedTenants.map(t => t.tenant.userId)
+    
+    return [... new Set([...tenantUserIds, ...assignedCustomerUserIds, ...assignedTenantUserIds])]
+}
 
 const DeviceCredentialsService = {
-  async validateToken(token, type, deviceId = null) {
-    let credentials = null;
-    switch (type) {
-      case constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN:
-        credentials = await DeviceCredentialsDAO.getByCredentialsId(
-          token,
-          deviceId
-        );
-        break;
+    async validateToken(token, type, deviceId = null) {
+        let credentials = null
+        switch (type) {
+            case constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN:
+                credentials = await DeviceCredentialsDAO.getByCredentialsId(token, deviceId)
+                break
 
-      case constant.DEVICE_CREDENTIALS_TYPE_X_509:
-        const x509Token = token
-          .replace("-----BEGIN PUBLIC KEY-----", "")
-          .replace("-----END PUBLIC KEY-----", "")
-          .replace(/\n/g, "")
-          .trim();
+            case constant.DEVICE_CREDENTIALS_TYPE_X_509:
+                const x509Token = token
+                    .replace("-----BEGIN PUBLIC KEY-----", "")
+                    .replace("-----END PUBLIC KEY-----", "")
+                    .replace(/\n/g, "")
+                    .trim()
 
-        const x509HashToken = crypto
-          .createHash("sha256")
-          .update(x509Token)
-          .digest("hex");
-        credentials = await DeviceCredentialsDAO.getByCredentialsId(
-          x509HashToken,
-          deviceId
-        );
-        break;
+                const x509HashToken = crypto.createHash("sha256").update(x509Token).digest("hex")
+                credentials = await DeviceCredentialsDAO.getByCredentialsId(x509HashToken, deviceId)
+                break
 
-      case constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC:
-        const mqttBasicToken = JSON.stringify(token);
-        const mqttBasicHashToken = crypto
-          .createHash("sha256")
-          .update(mqttBasicToken)
-          .digest("hex");
+            case constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC:
+                const mqttBasicToken = JSON.stringify(token)
+                const mqttBasicHashToken = crypto
+                    .createHash("sha256")
+                    .update(mqttBasicToken)
+                    .digest("hex")
 
-        if (deviceId) {
-          credentials = await DeviceCredentialsDAO.getByMqttClientId(mqttBasicToken, deviceId)
+                if (deviceId) {
+                    credentials = await DeviceCredentialsDAO.getByMqttClientId(
+                        mqttBasicToken,
+                        deviceId
+                    )
+                } else {
+                    credentials = await DeviceCredentialsDAO.getByCredentialsId(
+                        mqttBasicHashToken,
+                        deviceId
+                    )
+                }
+                break
+
+            default:
+                break
         }
-        else {
-          credentials = await DeviceCredentialsDAO.getByCredentialsId(
-            mqttBasicHashToken,
-            deviceId
-          );
+
+        if (!credentials) return false
+
+        const device = await DeviceDAO.getByIdWithoutCredentials(credentials.deviceId)
+
+        const userIds = await getUserIdsRelatedToDevice(device)
+
+        const response = {
+            ...device,
+            userIds,
         }
-        break;
 
-      default:
-        break;
-    }
+        return response
+    },
 
-    if (!credentials) return false;
-    const device = await DeviceDAO.getByIdWithoutCredentials(credentials.deviceId);
-    let userId
-    if (device.tenantId) {
-      const userTenant = await TenantDAO.getById(device.tenantId)
-      console.log('userTenant', userTenant);
-      userId = userTenant.userId
-    }
+    async create(options) {
+        const {deviceId, credentialsType, credentialsValue, createUid} = options
 
-    if (device.customerId) {
-      const userCustomer = await CustomerDAO.get(device.customerId)
-      console.log('userCustomer', userCustomer);
-      userId = userCustomer.userId
-    }
-    const response = {
-      ...device,
-      userId
-    }
+        const {rawCredentialsValue, credentialsId} = preProcessToken(
+            credentialsType,
+            credentialsValue
+        )
 
-    return response
-  },
+        return await DeviceCredentialsDAO.create({
+            deviceId,
+            credentialsType,
+            credentialsId,
+            credentialsValue: rawCredentialsValue,
+            createUid,
+        })
+    },
 
-  async create(options) {
-    const { deviceId, credentialsType, credentialsValue, createUid } = options;
+    async getByDeviceId(deviceId) {
+        return await DeviceCredentialsDAO.getByDeviceId(deviceId)
+    },
 
-    const {rawCredentialsValue, credentialsId} = preProcessToken(credentialsType, credentialsValue)
+    async update(deviceId, options) {
+        const {userId, credentialsType, credentialsValue} = options
 
-    return await DeviceCredentialsDAO.create({
-      deviceId,
-      credentialsType,
-      credentialsId,
-      credentialsValue: rawCredentialsValue,
-      createUid,
-    });
-  },
+        const {rawCredentialsValue, credentialsId} = preProcessToken(
+            credentialsType,
+            credentialsValue
+        )
 
-  async getByDeviceId(deviceId) {
-    return await DeviceCredentialsDAO.getByDeviceId(deviceId);
-  },
+        const updateOptions = {
+            credentialsType,
+            credentialsId,
+            credentialsValue: rawCredentialsValue,
+            updateUid: userId,
+        }
 
-  async update(deviceId, options) {
-    const { userId, credentialsType, credentialsValue } = options;
+        return await DeviceCredentialsDAO.update(deviceId, updateOptions)
+    },
+}
 
-    const {rawCredentialsValue, credentialsId} = preProcessToken(credentialsType, credentialsValue)
-
-    const updateOptions = {
-      credentialsType,
-      credentialsId,
-      credentialsValue: rawCredentialsValue,
-      updateUid: userId,
-    };
-
-    return await DeviceCredentialsDAO.update(deviceId, updateOptions);
-  },
-};
-
-module.exports = DeviceCredentialsService;
+module.exports = DeviceCredentialsService

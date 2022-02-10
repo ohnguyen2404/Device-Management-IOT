@@ -48,6 +48,7 @@ module.exports = (app) => {
       authJwt.verifyToken,
       authJwt.isTenantOrAdmin,
       validator.validateDeviceDetails,
+      validator.validateDeviceCredentials
     ],
     deviceController.createDevice)
 
