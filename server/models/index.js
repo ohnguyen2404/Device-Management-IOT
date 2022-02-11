@@ -26,6 +26,7 @@ db.WidgetType = require("./widgetType")(sequelize, Sequelize)
 db.Dashboard = require("./dashboard")(sequelize, Sequelize)
 db.CustomerDevice = require("./customerDevice")(sequelize, Sequelize)
 db.TenantDevice = require("./tenantDevice")(sequelize, Sequelize)
+db.Alarm = require("./alarm")(sequelize, Sequelize)
 
 db.Tenant.hasMany(db.Device, {foreignKey: "tenantId"})
 db.Tenant.hasMany(db.Customer, {foreignKey: "tenantId"})
@@ -57,4 +58,5 @@ db.CustomerDevice.belongsTo(db.Device, {foreignKey: "deviceId"})
 db.TenantDevice.belongsTo(db.Tenant, {foreignKey: "tenantId"})
 db.TenantDevice.belongsTo(db.Device, {foreignKey: "deviceId"})
 
+db.Alarm.belongsTo(db.Device, {foreignKey: "deviceId"})
 module.exports = db
