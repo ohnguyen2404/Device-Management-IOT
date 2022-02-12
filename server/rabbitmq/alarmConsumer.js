@@ -1,13 +1,16 @@
 const amqp = require("amqplib/callback_api")
-const AlarmProducer = require("./alarmProducer")
 const AlarmService = require("../services/alarm")
+const DeviceService = require("../services/device")
 
 const onConsumeMsg = async (msg) => {
-    console.log("message consumed:", msg)
     const obj_msg = JSON.parse(msg)
-    const {name, deviceId, severity} = obj_msg
-    await AlarmService.create({name, deviceId, severity})
-    AlarmProducer.sendMessage(msg)
+    console.log("message consumed:", obj_msg)
+    const json_data = JSON.parse(obj_msg.data)
+    const existDevice = await DeviceService.getById(json_data.deviceId)
+    if (existDevice) {
+        const {deviceId, name, severity} = json_data
+        await AlarmService.create({deviceId, name, severity})
+    }
 }
 
 const RabbitMQConsumer = {
@@ -24,7 +27,7 @@ const RabbitMQConsumer = {
                 const exchange = "alarmExchange"
 
                 channel.assertExchange(exchange, "fanout", {
-                    durable: false,
+                    durable: true,
                 })
 
                 channel.assertQueue(
