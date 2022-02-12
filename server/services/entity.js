@@ -11,9 +11,8 @@ const logger = require("../helpers/logger");
 
 const EntityService = {
   async getUserEntity(userId, authorities) {
-    let customerId, tenantId;
     if (authorities.includes(constant.ROLE_CUSTOMER)) {
-      const customerUser = await CustomerService.getByUserId(userId)["id"];
+      const customerUser = await CustomerService.getByUserId(userId);
 
       if (!customerUser) return false;
 
