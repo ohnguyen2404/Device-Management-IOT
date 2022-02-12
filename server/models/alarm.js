@@ -11,9 +11,9 @@ module.exports = (sequelize, Sequelize) => {
             deviceId: {
                 type: Sequelize.UUID,
                 references: {
-                    model: 'device',
-                    key: 'id'
-                }
+                    model: "device",
+                    key: "id",
+                },
             },
             name: {
                 type: Sequelize.STRING,
@@ -38,9 +38,9 @@ module.exports = (sequelize, Sequelize) => {
             freezeTableName: true,
             defaultScope: {
                 attributes: {
-                    exclude: ["deleted", "createUid", "updateUid", "createdAt", "updatedAt"]
-                }
-            }
+                    exclude: ["deleted", "createUid", "updateUid", "createdAt", "updatedAt"],
+                },
+            },
         }
     )
 

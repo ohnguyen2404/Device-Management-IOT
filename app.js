@@ -3,6 +3,7 @@ const logger = require("morgan")
 const cors = require("cors")
 const bodyParser = require("body-parser")
 const {StatusCodes, getReasonPhrase} = require("http-status-codes")
+const RabbitMQConsumer = require("./server/rabbitmq/alarmConsumer")
 
 // Set up .env file
 require("dotenv").config()
@@ -40,5 +41,7 @@ app.get("*", (req, res) =>
         message: "Welcome to the beginning.",
     })
 )
+
+RabbitMQConsumer.startService()
 
 module.exports = app
