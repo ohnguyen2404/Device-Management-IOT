@@ -46,6 +46,17 @@ db.Device.hasOne(db.DeviceCredentials, {
     as: "deviceCredentials",
 })
 
+db.Device.hasMany(db.CustomerDevice, {
+    foreignKey: "deviceId",
+    as: "deviceCustomers"
+})
+
+
+db.Device.hasMany(db.TenantDevice, {
+    foreignKey: "deviceId",
+    as: "deviceTenants"
+})
+
 db.WidgetsBundle.belongsTo(db.Tenant, {foreignKey: "tenantId"})
 db.WidgetType.belongsTo(db.Tenant, {foreignKey: "tenantId"})
 

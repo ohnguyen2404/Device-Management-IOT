@@ -1,15 +1,34 @@
 const {Op} = require("sequelize")
-const {Device, DeviceCredentials, CustomerDevice, TenantDevice, Customer, Tenant} = require("../models")
+const {
+    Device,
+    DeviceCredentials,
+    CustomerDevice,
+    TenantDevice,
+    Customer,
+    Tenant,
+} = require("../models")
 const logger = require("../helpers/logger")
 
 const DeviceDAO = {
     async getAll() {
         const deviceQuery = {
-            include: {
-                model: DeviceCredentials,
-                required: true,
-                as: "deviceCredentials",
-            },
+            include: [
+                {
+                    model: DeviceCredentials,
+                    required: true,
+                    as: "deviceCredentials",
+                },
+                {
+                    model: CustomerDevice,
+                    attributes: ["customerId"],
+                    as: "deviceCustomers",
+                },
+                {
+                    model: TenantDevice,
+                    attributes: ["tenantId"],
+                    as: "deviceTenants",
+                },
+            ],
         }
 
         return await Device.findAll(deviceQuery, {raw: true})
@@ -20,11 +39,23 @@ const DeviceDAO = {
             where: {
                 firstTenantId,
             },
-            include: {
-                model: DeviceCredentials,
-                required: true,
-                as: "deviceCredentials",
-            },
+            include: [
+                {
+                    model: DeviceCredentials,
+                    required: true,
+                    as: "deviceCredentials",
+                },
+                {
+                    model: CustomerDevice,
+                    attributes: ["customerId"],
+                    as: "deviceCustomers",
+                },
+                {
+                    model: TenantDevice,
+                    attributes: ["tenantId"],
+                    as: "deviceTenants",
+                },
+            ],
         }
 
         return await Device.findAll(deviceQuery, {raw: true})
@@ -35,11 +66,29 @@ const DeviceDAO = {
             where: {
                 id: deviceIds,
             },
-            include: {
-                model: DeviceCredentials,
-                required: true,
-                as: "deviceCredentials",
-            },
+            include: [
+                {
+                    model: DeviceCredentials,
+                    required: true,
+                    as: "deviceCredentials",
+                },
+                {
+                    model: CustomerDevice,
+                    attributes: ["customerId"],
+                    as: "deviceCustomers",
+                    include: {
+                        model: Customer,
+                    },
+                },
+                {
+                    model: TenantDevice,
+                    attributes: ["tenantId"],
+                    as: "deviceTenants",
+                    include: {
+                        model: Tenant,
+                    },
+                },
+            ],
         }
 
         return await Device.findAll(deviceQuery, {raw: true})
@@ -86,6 +135,7 @@ const DeviceDAO = {
 
     async create(reqTenant, options) {
         try {
+            console.log("create device options", options)
             return await Device.create({
                 ...options,
                 firstTenantId: reqTenant.firstTenantId,
@@ -213,6 +263,64 @@ const DeviceDAO = {
             const assignedDeviceIds = assignedDevices.map((d) => d.deviceId)
 
             return [...assignedDeviceIds, ...tenantDeviceIds]
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async assignTenantsToDevice(tenantIds, deviceId) {
+        try {
+            const createRecords = tenantIds.map((t) => {
+                return {
+                    tenantId: t,
+                    deviceId,
+                }
+            })
+            return await TenantDevice.bulkCreate(createRecords)
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async unassignTenantsFromDevice(tenantIds, deviceId) {
+        try {
+            return await TenantDevice.destroy({
+                where: {
+                    deviceId,
+                    tenantId: tenantIds,
+                },
+            })
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async assignCustomersToDevice(customerIds, deviceId) {
+        try {
+            const createRecords = customerIds.map((c) => {
+                return {
+                    customerId: c,
+                    deviceId,
+                }
+            })
+            return await CustomerDevice.bulkCreate(createRecords)
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async unassignCustomersFromDevice(customerIds, deviceId) {
+        try {
+            return await CustomerDevice.destroy({
+                where: {
+                    deviceId,
+                    customerId: customerIds,
+                },
+            })
         } catch (e) {
             logger.error(e.message)
             return false

@@ -57,7 +57,6 @@ module.exports = {
     const { id, firstTenantId } = userEntity;
     
     const result = await DeviceService.create({userId, id, firstTenantId}, options)
-    console.log('resultheree', result);
     if (!result) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         message: "Can not create device!",
