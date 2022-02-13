@@ -21,6 +21,9 @@ module.exports = (sequelize, Sequelize) => {
             severity: {
                 type: Sequelize.STRING,
             },
+            detail: {
+                type: Sequelize.STRING,
+            },
 
             deleted: {
                 type: Sequelize.BOOLEAN,

@@ -8,8 +8,8 @@ const onConsumeMsg = async (msg) => {
     const json_data = JSON.parse(obj_msg.data)
     const existDevice = await DeviceService.getById(json_data.deviceId)
     if (existDevice) {
-        const {deviceId, name, severity} = json_data
-        await AlarmService.create({deviceId, name, severity})
+        const {deviceId, name, severity, detail} = json_data
+        await AlarmService.create({deviceId, name, severity, detail})
     }
 }
 

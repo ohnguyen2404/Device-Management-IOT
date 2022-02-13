@@ -5,6 +5,7 @@ const deviceCredentials = require('./deviceCredentials')
 const widgetsBundle = require('./widgetsBundle')
 const widgetType = require('./widgetType')
 const dashboard = require('./dashboard')
+const alarm = require('./alarm')
 
 module.exports = {
   device,
@@ -13,5 +14,6 @@ module.exports = {
   deviceCredentials,
   widgetsBundle,
   widgetType,
-  dashboard
+  dashboard,
+  alarm
 }
