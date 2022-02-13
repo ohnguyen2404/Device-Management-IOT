@@ -41,7 +41,7 @@ module.exports = (sequelize, Sequelize) => {
             freezeTableName: true,
             defaultScope: {
                 attributes: {
-                    exclude: ["deleted", "createUid", "updateUid", "createdAt", "updatedAt"],
+                    exclude: ["deleted", "createUid", "updateUid"],
                 },
             },
         }

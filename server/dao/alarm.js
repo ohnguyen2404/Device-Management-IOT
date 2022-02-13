@@ -4,11 +4,12 @@ const logger = require("../helpers/logger")
 
 const AlarmDAO = {
     async getAllByDeviceId(deviceId) {
-        return await Alarm.findAll({
+        return Alarm.findAll({
             where: {
                 deviceId,
                 deleted: false,
             },
+            order: [["createdAt", "DESC"]]
         })
     },
 

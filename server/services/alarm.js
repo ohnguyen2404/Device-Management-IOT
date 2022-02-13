@@ -2,7 +2,7 @@ const AlarmDAO = require("../dao/alarm")
 
 const AlarmService = {
     async getAllByDeviceId(deviceId) {
-        return await AlarmDAO.getAllByDeviceId(deviceId)
+        return AlarmDAO.getAllByDeviceId(deviceId)
     },
 
     async getById(alarmId) {
