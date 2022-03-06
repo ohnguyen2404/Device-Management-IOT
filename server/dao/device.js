@@ -116,7 +116,7 @@ const DeviceDAO = {
         }
     },
 
-    async getByName(name, tenantId) {
+    async getByName(name) {
         try {
             return await Device.findOne({
                 where: {name},
