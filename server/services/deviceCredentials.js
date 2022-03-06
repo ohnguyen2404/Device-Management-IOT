@@ -21,10 +21,7 @@ const preProcessToken = (credentialsType, credentialsValue) => {
 
     // Note: credentials type X.509 will have it's credentials_id = (SHA256) hash of it's RSA PublicKey
     if (credentialsType === constant.DEVICE_CREDENTIALS_TYPE_X_509) {
-        const processedRSAPublicKey = credentialsValue.RSAPublicKey.replace(
-            "-----BEGIN PUBLIC KEY-----",
-            ""
-        )
+        const processedRSAPublicKey = credentialsValue.RSAPublicKey.replace("-----BEGIN PUBLIC KEY-----", "")
             .replace("-----END PUBLIC KEY-----", "")
             .replace(/\n/g, "")
             .trim()
@@ -50,20 +47,20 @@ const preProcessToken = (credentialsType, credentialsValue) => {
 }
 
 const getUserIdsRelatedToDevice = async (device) => {
-    const {tenantId ,firstTenantId, id} = device
+    const {tenantId, firstTenantId, id} = device
     // Tenant and first Tenant of device
     const tenants = await TenantDAO.getByIds([tenantId, firstTenantId])
-    const tenantUserIds = tenants.map(t => t.userId)
+    const tenantUserIds = tenants.map((t) => t.userId)
 
     // Assigned Customers
     const assignedCustomers = await DeviceDAO.getDeviceCustomers(id)
-    const assignedCustomerUserIds = assignedCustomers.map(c => c.customer.userId)
-    
+    const assignedCustomerUserIds = assignedCustomers.map((c) => c.customer.userId)
+
     // Assigned Tenants
     const assignedTenants = await DeviceDAO.getDeviceTenants(id)
-    const assignedTenantUserIds = assignedTenants.map(t => t.tenant.userId)
-    
-    return [... new Set([...tenantUserIds, ...assignedCustomerUserIds, ...assignedTenantUserIds])]
+    const assignedTenantUserIds = assignedTenants.map((t) => t.tenant.userId)
+
+    return [...new Set([...tenantUserIds, ...assignedCustomerUserIds, ...assignedTenantUserIds])]
 }
 
 const DeviceCredentialsService = {
@@ -87,21 +84,12 @@ const DeviceCredentialsService = {
 
             case constant.DEVICE_CREDENTIALS_TYPE_MQTT_BASIC:
                 const mqttBasicToken = JSON.stringify(token)
-                const mqttBasicHashToken = crypto
-                    .createHash("sha256")
-                    .update(mqttBasicToken)
-                    .digest("hex")
+                const mqttBasicHashToken = crypto.createHash("sha256").update(mqttBasicToken).digest("hex")
 
                 if (deviceId) {
-                    credentials = await DeviceCredentialsDAO.getByMqttClientId(
-                        mqttBasicToken,
-                        deviceId
-                    )
+                    credentials = await DeviceCredentialsDAO.getByMqttClientId(mqttBasicToken, deviceId)
                 } else {
-                    credentials = await DeviceCredentialsDAO.getByCredentialsId(
-                        mqttBasicHashToken,
-                        deviceId
-                    )
+                    credentials = await DeviceCredentialsDAO.getByCredentialsId(mqttBasicHashToken, deviceId)
                 }
                 break
 
@@ -124,12 +112,14 @@ const DeviceCredentialsService = {
     },
 
     async create(options) {
-        const {deviceId, credentialsType, credentialsValue, createUid} = options
+        const {
+            deviceId,
+            credentialsType = constant.DEVICE_CREDENTIALS_TYPE_ACCESS_TOKEN,
+            credentialsValue,
+            createUid,
+        } = options
 
-        const {rawCredentialsValue, credentialsId} = preProcessToken(
-            credentialsType,
-            credentialsValue
-        )
+        const {rawCredentialsValue, credentialsId} = preProcessToken(credentialsType, credentialsValue)
 
         return await DeviceCredentialsDAO.create({
             deviceId,
@@ -147,10 +137,7 @@ const DeviceCredentialsService = {
     async update(deviceId, options) {
         const {userId, credentialsType, credentialsValue} = options
 
-        const {rawCredentialsValue, credentialsId} = preProcessToken(
-            credentialsType,
-            credentialsValue
-        )
+        const {rawCredentialsValue, credentialsId} = preProcessToken(credentialsType, credentialsValue)
 
         const updateOptions = {
             credentialsType,

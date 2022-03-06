@@ -1,12 +1,6 @@
 const {Op} = require("sequelize")
-const {
-    Device,
-    DeviceCredentials,
-    CustomerDevice,
-    TenantDevice,
-    Customer,
-    Tenant,
-} = require("../models")
+const {Device, DeviceCredentials, CustomerDevice, TenantDevice, Customer, Tenant} = require("../models")
+const DeviceCredentialsService = require("../services/deviceCredentials")
 const logger = require("../helpers/logger")
 
 const DeviceDAO = {
@@ -122,7 +116,7 @@ const DeviceDAO = {
         }
     },
 
-    async getByName(name) {
+    async getByName(name, tenantId) {
         try {
             return await Device.findOne({
                 where: {name},
@@ -325,6 +319,27 @@ const DeviceDAO = {
             logger.error(e.message)
             return false
         }
+    },
+
+    async getOrCreateDeviceByName(name, tenantId, firstTenantId, label) {
+        const existDevice = await Device.findOne({
+            where: {name, tenantId},
+        })
+
+        if (!existDevice) {
+            const newDevice = await Device.create({
+                name,
+                tenantId,
+                firstTenantId,
+                label,
+            })
+
+            await DeviceCredentialsService.create({deviceId: newDevice.id})
+
+            return this.getById(newDevice.id)
+        }
+
+        return this.getById(existDevice.id)
     },
 }
 

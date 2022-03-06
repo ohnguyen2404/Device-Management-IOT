@@ -81,4 +81,10 @@ module.exports = (app) => {
     deviceCredentialsController.validateToken
   )
 
+  // Public API-s for IoT device gateway
+  app.get(
+    "/device/get-or-create",
+    deviceController.getOrCreateDevice
+  )
+
 }

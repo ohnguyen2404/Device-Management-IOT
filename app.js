@@ -42,6 +42,6 @@ app.get("*", (req, res) =>
     })
 )
 
-RabbitMQConsumer.startService()
+//RabbitMQConsumer.startService()
 
 module.exports = app

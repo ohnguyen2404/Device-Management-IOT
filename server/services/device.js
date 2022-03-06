@@ -24,7 +24,7 @@ const handleDeviceAssignation = async (assignedTenantIds, assignedCustomerIds, d
                 await DeviceDAO.assignCustomersToDevice(newAssignedCustomerIds, deviceId)
             })
         } catch (e) {
-            logger.error('assign_customer_transaction-' + e.message)
+            logger.error("assign_customer_transaction-" + e.message)
         }
     }
 
@@ -40,10 +40,8 @@ const handleDeviceAssignation = async (assignedTenantIds, assignedCustomerIds, d
                 await DeviceDAO.assignTenantsToDevice(newAssignedTenantIds, deviceId)
             })
         } catch (e) {
-            logger.error('assign_tenant_transaction-' + e.message)
+            logger.error("assign_tenant_transaction-" + e.message)
         }
-        console.log("unassignedTenantIds", unassignedTenantIds)
-        console.log("newAssignedTenantIds", newAssignedTenantIds)
     }
 }
 
@@ -110,6 +108,10 @@ const DeviceService = {
 
     async delete(deviceId) {
         return await DeviceDAO.delete(deviceId)
+    },
+
+    async getOrCreateDevice(name, tenantId, firstTenantId, label) {
+        return await DeviceDAO.getOrCreateDeviceByName(name, tenantId, firstTenantId, label)
     },
 }
 
