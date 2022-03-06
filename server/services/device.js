@@ -111,7 +111,20 @@ const DeviceService = {
     },
 
     async getOrCreateDevice(name, tenantId, firstTenantId, label) {
-        return await DeviceDAO.getOrCreateDeviceByName(name, tenantId, firstTenantId, label)
+        const existDevice = await DeviceDAO.getByOptions({name, tenantId})
+        if (!existDevice) {
+            const newDevice = await DeviceDAO.createWithOptions({
+                name,
+                tenantId,
+                firstTenantId,
+                label,
+            })
+            await DeviceCredentialsService.create({deviceId: newDevice.id})
+
+            return DeviceDAO.getById(newDevice.id)
+        }
+
+        return DeviceDAO.getById(existDevice.id)
     },
 }
 

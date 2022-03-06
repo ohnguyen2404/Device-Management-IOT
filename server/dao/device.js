@@ -1,6 +1,5 @@
 const {Op} = require("sequelize")
 const {Device, DeviceCredentials, CustomerDevice, TenantDevice, Customer, Tenant} = require("../models")
-const DeviceCredentialsService = require("../services/deviceCredentials")
 const logger = require("../helpers/logger")
 
 const DeviceDAO = {
@@ -90,7 +89,7 @@ const DeviceDAO = {
 
     async getByIdWithoutCredentials(deviceId) {
         try {
-            return await Device.findByPk(deviceId, {raw: true})
+            return Device.findByPk(deviceId, {raw: true})
         } catch (e) {
             logger.error(e.message)
             return false
@@ -129,13 +128,22 @@ const DeviceDAO = {
 
     async create(reqTenant, options) {
         try {
-            console.log("create device options", options)
             return await Device.create({
                 ...options,
                 firstTenantId: reqTenant.firstTenantId,
                 tenantId: reqTenant.id,
                 createUid: reqTenant.userId,
             })
+        } catch (e) {
+            logger.error(e.message)
+            return false
+        }
+    },
+
+    async createWithOptions(options) {
+        try {
+            console.log("create device options", options)
+            return await Device.create({...options})
         } catch (e) {
             logger.error(e.message)
             return false
@@ -321,25 +329,11 @@ const DeviceDAO = {
         }
     },
 
-    async getOrCreateDeviceByName(name, tenantId, firstTenantId, label) {
-        const existDevice = await Device.findOne({
-            where: {name, tenantId},
+
+    async getByOptions(options) {
+        return Device.findOne({
+            where: {...options},
         })
-
-        if (!existDevice) {
-            const newDevice = await Device.create({
-                name,
-                tenantId,
-                firstTenantId,
-                label,
-            })
-
-            await DeviceCredentialsService.create({deviceId: newDevice.id})
-
-            return this.getById(newDevice.id)
-        }
-
-        return this.getById(existDevice.id)
     },
 }
 
