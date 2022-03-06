@@ -119,12 +119,27 @@ const DeviceService = {
                 firstTenantId,
                 label,
             })
+
             await DeviceCredentialsService.create({deviceId: newDevice.id})
 
-            return DeviceDAO.getById(newDevice.id)
+            const device = await DeviceDAO.getByIdWithoutCredentials(newDevice.id)
+            const userIds = await DeviceCredentialsService.getUserIdsRelatedToDevice(device)
+            const response = {
+                ...device,
+                userIds,
+            }
+
+            return response
         }
 
-        return DeviceDAO.getById(existDevice.id)
+        const device = await DeviceDAO.getByIdWithoutCredentials(existDevice.id)
+        const userIds = await DeviceCredentialsService.getUserIdsRelatedToDevice(device)
+        const response = {
+            ...device,
+            userIds,
+        }
+
+        return response
     },
 }
 

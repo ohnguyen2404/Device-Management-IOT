@@ -46,23 +46,6 @@ const preProcessToken = (credentialsType, credentialsValue) => {
     return {credentialsId, rawCredentialsValue}
 }
 
-const getUserIdsRelatedToDevice = async (device) => {
-    const {tenantId, firstTenantId, id} = device
-    // Tenant and first Tenant of device
-    const tenants = await TenantDAO.getByIds([tenantId, firstTenantId])
-    const tenantUserIds = tenants.map((t) => t.userId)
-
-    // Assigned Customers
-    const assignedCustomers = await DeviceDAO.getDeviceCustomers(id)
-    const assignedCustomerUserIds = assignedCustomers.map((c) => c.customer.userId)
-
-    // Assigned Tenants
-    const assignedTenants = await DeviceDAO.getDeviceTenants(id)
-    const assignedTenantUserIds = assignedTenants.map((t) => t.tenant.userId)
-
-    return [...new Set([...tenantUserIds, ...assignedCustomerUserIds, ...assignedTenantUserIds])]
-}
-
 const DeviceCredentialsService = {
     async validateToken(token, type, deviceId = null) {
         let credentials = null
@@ -101,7 +84,7 @@ const DeviceCredentialsService = {
 
         const device = await DeviceDAO.getByIdWithoutCredentials(credentials.deviceId)
 
-        const userIds = await getUserIdsRelatedToDevice(device)
+        const userIds = await this.getUserIdsRelatedToDevice(device)
 
         const response = {
             ...device,
@@ -148,6 +131,23 @@ const DeviceCredentialsService = {
 
         return await DeviceCredentialsDAO.update(deviceId, updateOptions)
     },
+
+    async getUserIdsRelatedToDevice(device) {
+        const {tenantId, firstTenantId, id} = device
+        // Tenant and first Tenant of device
+        const tenants = await TenantDAO.getByIds([tenantId, firstTenantId])
+        const tenantUserIds = tenants.map((t) => t.userId)
+    
+        // Assigned Customers
+        const assignedCustomers = await DeviceDAO.getDeviceCustomers(id)
+        const assignedCustomerUserIds = assignedCustomers.map((c) => c.customer.userId)
+    
+        // Assigned Tenants
+        const assignedTenants = await DeviceDAO.getDeviceTenants(id)
+        const assignedTenantUserIds = assignedTenants.map((t) => t.tenant.userId)
+    
+        return [...new Set([...tenantUserIds, ...assignedCustomerUserIds, ...assignedTenantUserIds])]
+    }
 }
 
 module.exports = DeviceCredentialsService
